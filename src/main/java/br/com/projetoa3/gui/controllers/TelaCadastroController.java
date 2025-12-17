@@ -68,7 +68,7 @@ public class TelaCadastroController implements Initializable {
                 return;
             }
         }
-        Alunos.adicionarAluno(new Alunos(cadastrarNomeId.getText().trim(), raLong, comboBoxTurma.getValue(), Professor.getRaLogado()));
+        Alunos.addStudents(new Alunos(cadastrarNomeId.getText().trim(), raLong, comboBoxTurma.getValue(), Professor.getRaLogado()));
 
         for (Map.Entry<String, Alunos> entry3 : Alunos.getLista().entrySet()) {
             AlunosCrud managerr = new AlunosCrud();

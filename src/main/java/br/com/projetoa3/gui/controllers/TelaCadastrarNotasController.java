@@ -76,15 +76,19 @@ public class TelaCadastrarNotasController implements Initializable {
                 alert.showAndWait();
                 return;
             }
-            //aqui vai setar os elementos na ListView de Alunos
             Notas novaNota = new Notas(notaA1, notaA2, notaA3);
-
-            Notas.adicionarNota(alunoSelecionado.getRa(), novaNota);
-            for (Map.Entry<Long, Notas> entry4 : Notas.getNotasPorAluno().entrySet()) {
-                NotasCrud manager = new NotasCrud();
-                manager.inserirNotas(entry4.getKey(), entry4.getValue().getNotaA1(), entry4.getValue().getNotaA2(), entry4.getValue().getNotaA3(), entry4.getValue().getSomaNota(), entry4.getValue().getStatus());
-            }
-
+            String raStr = String.valueOf(alunoSelecionado.getRa());
+            String chaveTurma = raStr + "-" + alunoSelecionado.getTurma();
+                    Notas.adicionarNota(chaveTurma, novaNota);
+                        NotasCrud manager = new NotasCrud();
+            manager.inserirNotas(
+                    chaveTurma,
+                    novaNota.getNotaA1(),
+                    novaNota.getNotaA2(),
+                    novaNota.getNotaA3(),
+                    novaNota.getSomaNota(),
+                    novaNota.getStatus()
+            );
                 cadastrarNotaA1.clear();
             cadastrarNotaA2.clear();
             cadastrarNotaA3.clear();
@@ -108,7 +112,7 @@ public class TelaCadastrarNotasController implements Initializable {
         labelNomeSelecionado.setText(aluno.getNome());
 
 
-        Notas notas = Notas.getNotaPorAluno(aluno.getRa());
+        Notas notas = Notas.getNotaPorAluno(aluno.getRa()+"-"+aluno.getTurma());
         if (notas != null) {
             cadastrarNotaA1.setText(String.valueOf(notas.getNotaA1()));
             cadastrarNotaA2.setText(String.valueOf(notas.getNotaA2()));

@@ -95,18 +95,24 @@ public class TelaPrincipalController implements Initializable {
                 try {
                     listaNotasId.refresh();
                     Long ra = Long.parseLong(raStr);
-                    Notas nota = Notas.getNotaPorAluno(ra);
-                    if (nota != null) {
-                        listaNotasId.getItems().setAll(
-                                "A1: " + nota.getNotaA1(),
-                                "A2: " + nota.getNotaA2(),
-                                "A3: " + nota.getNotaA3(),
-                                "Soma: " + nota.getSomaNota(),
-                                "Status: " + nota.getStatus()
-                        );
-                    } else {
-                        listaNotasId.getItems().setAll("Sem notas cadastradas");
-                    }
+                    for (Map.Entry<String, Alunos> entry : Alunos.getLista().entrySet()) {
+                        if (entry.getValue().getRa().equals(ra)) {
+                            String turma = entry.getValue().getTurma();
+
+                            Notas nota = Notas.getNotaPorAluno(ra + "-" + turma);
+                            if (nota != null) {
+                                listaNotasId.getItems().setAll(
+                                        "A1: " + nota.getNotaA1(),
+                                        "A2: " + nota.getNotaA2(),
+                                        "A3: " + nota.getNotaA3(),
+                                        "Soma: " + nota.getSomaNota(),
+                                        "Status: " + nota.getStatus()
+                                );
+                            } } else {
+                            listaNotasId.getItems().setAll("Sem notas cadastradas");
+                        }
+                        }
+
                 } catch (NumberFormatException e) {
                     listaNotasId.getItems().setAll("Erro ao ler RA");
                 }

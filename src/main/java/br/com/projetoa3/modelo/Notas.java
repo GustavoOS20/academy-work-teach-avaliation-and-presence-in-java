@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 public class Notas {
-    private final static Map<Long, Notas> notasPorAluno = new HashMap<>();
+    private final static Map<String, Notas> notasPorAluno = new HashMap<>();
     private static ObservableList<Notas> notasObservable = FXCollections.observableArrayList();
 
 
@@ -31,7 +31,7 @@ public class Notas {
         notasObservable = notasObs;
     }
 
-    public static void setNotasPorAluno(Map<Long, Notas> notas) {
+    public static void setNotasPorAluno(Map<String, Notas> notas) {
         notasPorAluno.putAll(notas);
     }
 
@@ -39,16 +39,23 @@ public class Notas {
         return notasObservable;
     }
 
-    public static void adicionarNota(Long ra, Notas nota) {
-        notasObservable.add(nota);
-        notasPorAluno.put(ra, nota);
+    public static void adicionarNota(String ra, Notas nota) {
+        for(Map.Entry<String, Alunos> entry : Alunos.getLista().entrySet()) {
+            if (entry.getKey().equals(ra)) {
+                Alunos aluno = entry.getValue();
+                String chaveTurma =  aluno.getRa() +"-"+aluno.getTurma();
+                notasObservable.add(nota);
+                notasPorAluno.put(chaveTurma, nota);
+        }
+
+        }
     }
 
-    public static Notas getNotaPorAluno(Long ra) {
+    public static Notas getNotaPorAluno(String ra) {
         return notasPorAluno.get(ra);
     }
 
-    public static Map<Long, Notas> getNotasPorAluno() {
+    public static Map<String, Notas> getNotasPorAluno() {
         return notasPorAluno;
     }
 

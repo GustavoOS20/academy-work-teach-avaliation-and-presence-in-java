@@ -3,66 +3,46 @@ package br.com.projetoa3.modelo;
 import java.util.Map;
 import java.util.HashMap;
 
+import br.com.projetoa3.modelo.interfaces.ServiceStudent;
+import br.com.projetoa3.modelo.records.Student;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
 
-public class Alunos extends Turmas {
-    private static Map<String, Alunos> lista = new HashMap<>();
-    private static ObservableList<Alunos> listaObservable = FXCollections.observableArrayList();
+public class Alunos implements ServiceStudent {
+    private static Map<String, Student> lista = new HashMap<>();
+    private static ObservableList<Student> listaObservable = FXCollections.observableArrayList();;
 
-    private final String nome;
-    private long ra;
-
-    public Alunos(String nome, long ra, String turma, String professor) {
-        super(turma, professor);
-        this.nome = nome;
-        this.ra = ra;
-    }
-
-    public static void setLista(Map<String, Alunos> listaAlunos) {
+    @Override
+    public void setList(Map<String, Student> listaAlunos) {
         lista = listaAlunos;
     }
 
-    public static void setListaObservable(ObservableList<Alunos> listaObs) {
+    public static void setListaObservable(ObservableList<Student> listaObs) {
         listaObservable = listaObs;
     }
 
-    public static Map<String, Alunos> getLista() {
+    @Override
+    public Map<String, Student> getList() {
         return lista;
     }
 
-    public static ObservableList<Alunos> getListaObservable() {
+    public static ObservableList<Student> getListaObservable() {
         return listaObservable;
     }
 
-    public static void adicionarAluno(Alunos aluno) {
-        String raString = String.valueOf(aluno.getRa());
-        lista.put(raString, aluno);
-        listaObservable.add(aluno);
+    @Override
+    public void addStudents(Student student) {
+        String raString = String.valueOf(student.ra());
+        lista.put(raString, student);
+        listaObservable.add(student);
     }
 
-    public static void removerAluno(String ra) {
-        Alunos aluno = lista.remove(ra);
-        if (aluno != null) {
-            listaObservable.remove(aluno);
+    @Override
+    public void removeStudents(String ra) {
+        Student student = lista.remove(ra);
+        if (student != null) {
+            listaObservable.remove(student);
         }
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public Long getRa() {
-        return ra;
-    }
-
-    public void setRa(long ra) {
-        this.ra = ra;
-    }
-
-    public String toString() {
-        return "Aluno: " + nome + " | RA: " + ra + " | Turma: " + getTurma();
     }
 
 

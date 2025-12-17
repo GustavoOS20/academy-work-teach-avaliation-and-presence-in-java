@@ -1,5 +1,6 @@
 package br.com.projetoa3.gui.main;
 import br.com.projetoa3.bancodedados.*;
+import br.com.projetoa3.bancodedados.consurmers.ConsumerDbStudent;
 import br.com.projetoa3.modelo.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -36,8 +37,9 @@ public class mainFx extends Application {
             Turmas.getTurmasObservable().add(entry.getValue());
         }
 
-        AlunosCrud alunosCrud = new AlunosCrud();
-        alunosCrud.criarTabelaAlunos();
+        ServiceDBStudent serviceDBStudent = new AlunosCrud();
+        ConsumerDbStudent consumerDbStudent = new ConsumerDbStudent(serviceDBStudent);
+        consumerDbStudent.createConsume();
         Alunos.setLista(alunosCrud.listarAlunos());
         for (Map.Entry<String, Alunos> entry2 : Alunos.getLista().entrySet()) {
             Alunos.getListaObservable().add(entry2.getValue());
@@ -46,7 +48,7 @@ public class mainFx extends Application {
         NotasCrud notasCrud = new NotasCrud();
         notasCrud.criarTabelaNotas();
         Notas.setNotasPorAluno(notasCrud.listarNotas());
-        for (Map.Entry<Long, Notas> entry3 : Notas.getNotasPorAluno().entrySet()) {
+        for (Map.Entry<String, Notas> entry3 : Notas.getNotasPorAluno().entrySet()) {
             Notas.getNotasObservable().add(entry3.getValue());
         }
 

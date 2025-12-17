@@ -2,18 +2,20 @@ package br.com.projetoa3.bancodedados;
 
 import br.com.projetoa3.modelo.Alunos;
 
+import java.io.Serializable;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AlunosCrud {
+public class AlunosCrud implements ServiceDBStudent{
     private final String url = "jdbc:mysql://localhost:3306/projetoa3?serverTimezone=America/Bahia"; // substitua
     private final String usuario = "root"; // substitua
     private final String senha = "gu7672017"; // substitua
 
-    public void criarTabelaAlunos() {
-        String sql = "CREATE TABLE IF NOT EXISTS alunos (" +
+    @Override
+    public void createTable(String tableName) {
+        String sql = String.format("CREATE TABLE IF NOT EXISTS %s",tableName) +
                 "idA BIGINT AUTO_INCREMENT PRIMARY KEY," +
                 "RA VARCHAR(100)," +
                 "nome VARCHAR(100) NOT NULL," +
@@ -32,7 +34,8 @@ public class AlunosCrud {
         }
     }
 
-    public void inserirAluno(Long ra, String nome, String turmaId, String professor_ra) {
+    @Override
+    public void insert(Long ra, String nome, String turmaId, String professor_ra) {
         String sql = "INSERT INTO alunos (RA, nome, turmaId, professor_ra) VALUES (?, ?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(url, usuario, senha);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -50,7 +53,8 @@ public class AlunosCrud {
         }
     }
 
-    public Map<String,Alunos>listarAlunos() {
+    @Override
+    public Map<String,Alunos>listTables() {
         Map<String, Alunos> alunosMap = new HashMap<>(); // Recebe o mapa de alunos
         String sql = "SELECT * FROM alunos";
         try (Connection conn = DriverManager.getConnection(url, usuario, senha);
@@ -64,7 +68,8 @@ public class AlunosCrud {
                        ra,
                         rs.getString("turmaId"),
                         rs.getString("professor_ra"));
-                alunosMap.put(rs.getString("RA"), aluno);
+                String raTurma = rs.getString("RA") + "-"+ rs.getString("turmaId");
+                alunosMap.put(raTurma, aluno);
             }
 
         } catch (SQLException e) {
@@ -142,7 +147,9 @@ public class AlunosCrud {
         }
     }
 
-    */public void excluirAluno(String ra) {
+    */
+    @Override
+   public void delete(String ra) {
         String sql = "DELETE FROM alunos WHERE RA = ?";
         try (Connection conn = DriverManager.getConnection(url, usuario, senha);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
