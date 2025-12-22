@@ -23,7 +23,7 @@ public class Alunos implements IStudent {
 
     @Override
     public Map<String, Student> getList() {
-        return this.lista;
+        return lista;
     }
 
     public static ObservableList<Student> getListaObservable() {

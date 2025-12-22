@@ -3,15 +3,22 @@ package br.com.projetoa3.gui.controllers;
 import br.com.projetoa3.bancodedados.StudentServiceDb;
 import br.com.projetoa3.bancodedados.NotesDbServiceDb;
 import br.com.projetoa3.bancodedados.PresenceDbServiceDb;
+import br.com.projetoa3.bancodedados.consurmers.ConsumeDbNotes;
+import br.com.projetoa3.bancodedados.consurmers.ConsumeDbPresence;
+import br.com.projetoa3.bancodedados.consurmers.ConsumerDbStudent;
+import br.com.projetoa3.bancodedados.interfacedb.IDBStudent;
+import br.com.projetoa3.bancodedados.interfacedb.INotesDb;
+import br.com.projetoa3.bancodedados.interfacedb.IPresenceDb;
+import br.com.projetoa3.gui.alerts.AlertsClass;
+import br.com.projetoa3.gui.validations.ValidationsRemove;
+import br.com.projetoa3.modelo.consumersmodel.ConsumeStudent;
+import br.com.projetoa3.modelo.interfaces.IStudent;
+
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import br.com.projetoa3.modelo.Alunos;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.stage.Stage;
-
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -29,52 +36,21 @@ public class RemoverAlunoControllers implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         confirmarRemorcao.setOnAction(event -> {
             String ra = removerRA.getText().trim();
-            Alert alert = new Alert(Alert.AlertType.INFORMATION);
-
-            if (ra.isEmpty()) {
-                alert.setContentText("Por favor, digite o RA.");
-                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-                stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-                alert.showAndWait();
-                return;
-            }
-
-            if (!ra.matches("\\d+")) {
-                alert.setContentText("RA inválido. Digite apenas números.");
-                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-                stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-                alert.showAndWait();
-                return;
-            }
-
-            if (ra.length() != 10) {
-                alert.setContentText("RA inválido. Deve ter 10 dígitos.");
-                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-                stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-                alert.showAndWait();
-                return;
-            }
-
-            if (!Alunos.getLista().containsKey(ra)) {
-                alert.setContentText("Aluno não encontrado.");
-                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-                stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-                alert.showAndWait();
-                return;
-            }
-            Integer raInt = Integer.parseInt(ra);
-            StudentServiceDb studentServiceDb = new StudentServiceDb();
-            NotesDbServiceDb notesServiceDb = new NotesDbServiceDb();
-            PresenceDbServiceDb presenceService = new PresenceDbServiceDb();
-            Alunos.removerAluno(ra);
-            studentServiceDb.excluirAluno(ra);
-            notesServiceDb.excluirNotas(raInt);
-            presenceService.excluirPresenca(raInt);
-
-            alert.setContentText("Aluno removido com sucesso.");
-            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-            alert.showAndWait();
+            ValidationsRemove.validationsRa(ra);
+            IDBStudent student = new StudentServiceDb();
+            ConsumerDbStudent consumerDbStudent = new ConsumerDbStudent(student);
+            INotesDb notesDb = new NotesDbServiceDb();
+            ConsumeDbNotes consumeDbNotes = new ConsumeDbNotes(notesDb);
+            IPresenceDb presenceDb = new PresenceDbServiceDb();
+            ConsumeDbPresence consumeDbPresence = new ConsumeDbPresence(presenceDb);
+            IStudent student1 = new Alunos();
+            ConsumeStudent  consumeStudent = new ConsumeStudent(student1);
+            consumeStudent.consumeRemove(ra);
+            consumerDbStudent.delete(ra);
+            consumeDbNotes.deleteConsume(ra);
+            consumeDbPresence.deleteConsumer(ra);
+            AlertsClass alertsClass = new AlertsClass();
+            alertsClass.alertInformation("Aluno removido", "Aluno removido com sucesso", "remover alunos");
         });
     }
 }
