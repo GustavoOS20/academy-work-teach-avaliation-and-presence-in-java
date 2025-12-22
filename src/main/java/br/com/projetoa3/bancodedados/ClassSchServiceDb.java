@@ -1,17 +1,16 @@
 package br.com.projetoa3.bancodedados;
+import br.com.projetoa3.bancodedados.consurmers.ConsumerAPIJBDC;
+import br.com.projetoa3.bancodedados.interfacedb.IClassSchool;
 import br.com.projetoa3.modelo.Turmas;
+import br.com.projetoa3.modelo.records.ClassSchool;
 
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class TurmaCrud {
-
-    private final String URL = "jdbc:mysql://localhost:3306/projetoa3?serverTimezone=America/Bahia"; // substitua
-    private final String USUARIO = "root"; // substitua
-    private final String SENHA = "gu7672017";
-
-    public void criarTabelaTurmas() {
+public class ClassSchServiceDb implements IClassSchool {
+    @Override
+    public void createTable() {
         String sql = """
             CREATE TABLE IF NOT EXISTS turmas (
                 id VARCHAR(100) PRIMARY KEY,
@@ -21,10 +20,13 @@ public class TurmaCrud {
             );
         """;
 
-        try (Connection conn = DriverManager.getConnection(URL, USUARIO, SENHA);
-             Statement stmt = conn.createStatement()) {
-
-            stmt.execute(sql);
+            try (Connection conn = ConsumerAPIJBDC.conectar()){
+                if(conn != null){
+                    try (Statement stmt = conn.createStatement()) {
+                        stmt.execute(sql);
+                        System.out.println("Tabela 'turmas' criada com sucesso.");
+                }
+            }
             System.out.println("Tabela 'turmas' criada com sucesso.");
 
         } catch (SQLException e) {
@@ -32,49 +34,58 @@ public class TurmaCrud {
         }
     }
 
-    public void inserirTurma(String id,String nomeDaTurma, String professores_ra) {
+    @Override
+    public void insertClass(String id,String nomeDaTurma, String professores_ra) {
         String sql = "INSERT INTO turmas (id, nomeDaTurma, professores_ra) VALUES (?, ?, ?)";
 
-        try (Connection conn = DriverManager.getConnection(URL, USUARIO, SENHA);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConsumerAPIJBDC.conectar()){
+            assert conn != null;
+             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, id);
-            pstmt.setString(2, nomeDaTurma);
-            pstmt.setString(3, professores_ra);
-            pstmt.executeUpdate();
-            System.out.println("Turma inserida com sucesso.");
+                 pstmt.setString(1, id);
+                 pstmt.setString(2, nomeDaTurma);
+                 pstmt.setString(3, professores_ra);
+                 pstmt.executeUpdate();
+                 System.out.println("Turma inserida com sucesso.");
 
+             }
         } catch (SQLException e) {
             System.err.println("Erro ao inserir turma: " + e.getMessage());
         }
     }
 
-    public Map<String, Turmas> listarTurmas() {
-        Map<String, Turmas> turmas = new HashMap<>();
+    @Override
+    public Map<String, ClassSchool> listClass() {
+        Map<String, ClassSchool> turmas = new HashMap<>();
         String sql = "SELECT * FROM turmas";
 
-        try (Connection conn = DriverManager.getConnection(URL, USUARIO, SENHA);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        try (Connection conn = ConsumerAPIJBDC.conectar()){
+                assert conn != null;
+                try(Statement stmt = conn.createStatement()){
 
-            while (rs.next()) {
-                String id = rs.getString("id");
-                String nome = rs.getString("nomeDaTurma");
-                String professoresRa = rs.getString("professores_ra");
-                Turmas turma = new Turmas(nome, professoresRa);
-                turmas.put(id, turma);
+
+
+                 ResultSet rs = stmt.executeQuery(sql);{
+
+                        while (rs.next()) {
+                            String id = rs.getString("id");
+                            String nome = rs.getString("nomeDaTurma");
+                            String professoresRa = rs.getString("professores_ra");
+                            ClassSchool turma = new ClassSchool(nome, professoresRa);
+                            turmas.put(id, turma);
+                        }
+                    }
             }
-
-        } catch (SQLException e) {
+            } catch (SQLException e) {
             System.err.println("Erro ao listar turmas: " + e.getMessage());
         }
         return turmas;
     }
-
+/*
     public void buscarTurmaPorId(int id) {
         String sql = "SELECT * FROM turmas WHERE id = ?";
 
-        try (Connection conn = DriverManager.getConnection(URL, USUARIO, SENHA);
+        try (Connection conn = C);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, id);
@@ -135,22 +146,24 @@ public class TurmaCrud {
             System.err.println("Erro ao atualizar turma: " + e.getMessage());
         }
     }
-
-    public void excluirTurma(int id) {
+*/
+    @Override
+    public void delete(String id) {
         String sql = "DELETE FROM turmas WHERE id = ?";
 
-        try (Connection conn = DriverManager.getConnection(URL, USUARIO, SENHA);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConsumerAPIJBDC.conectar()){
+            assert conn != null;
+            try(PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, id);
-            int linhasAfetadas = pstmt.executeUpdate();
+                 pstmt.setString(1, id);
+                 int linhasAfetadas = pstmt.executeUpdate();
 
-            if (linhasAfetadas > 0) {
-                System.out.println("Turma excluída com sucesso.");
-            } else {
-                System.out.println("Nenhuma turma encontrada com ID " + id);
-            }
-
+                 if (linhasAfetadas > 0) {
+                     System.out.println("Turma excluída com sucesso.");
+                 } else {
+                     System.out.println("Nenhuma turma encontrada com ID " + id);
+                 }
+             }
         } catch (SQLException e) {
             System.err.println("Erro ao excluir turma: " + e.getMessage());
         }

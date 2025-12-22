@@ -1,7 +1,9 @@
 package br.com.projetoa3.gui.controllers;
 
-import br.com.projetoa3.bancodedados.ProfessorCrud;
+import br.com.projetoa3.bancodedados.TeacherServiceDb;
+import br.com.projetoa3.gui.validations.ValidationTeacher;
 import br.com.projetoa3.modelo.Professor;
+import br.com.projetoa3.modelo.records.Teach;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.fxml.Initializable;
@@ -30,7 +32,6 @@ public class CadastroProfessorControllers implements Initializable {
     @FXML
     private PasswordField Senha;
 
-    // vc tem capturar esses dados, jogar na lista Notas da classe Notas e atualizar a lista
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         BotaoCadastrar.setOnAction(event -> {
@@ -40,23 +41,12 @@ public class CadastroProfessorControllers implements Initializable {
     }
     @FXML
     protected void salvarDados() {
-        ProfessorCrud crud = new ProfessorCrud();
+        TeacherServiceDb crud = new TeacherServiceDb();
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        Professor professor = new Professor(Nome.getText(), RA.getText(), Email.getText(), Senha.getText());
-        if (professor.getNome().isEmpty() || professor.getRa().isEmpty() || professor.getEmail().isEmpty() || professor.getSenha().isEmpty()) {
-            alert.setTitle("Cadastro de Professor");
-            alert.setContentText("Por favor, preencha todos os campos.");
-            alert.setHeaderText("Campos obrigatórios não preenchidos!");
-            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-            alert.showAndWait();
-        } else if (professor.getRa().length() != 10) {
-            alert.setContentText("RA inválido. Deve ter 10 dígitos.");
-            alert.setTitle("Cadastro de Professor");
-            alert.setHeaderText("Erro no cadastro");
-            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-            alert.showAndWait();
+        Teach teach = new Teach(Nome.getText(), RA.getText(), Email.getText(), Senha.getText());
+        ValidationTeacher.validationFieldTeacher(teach);
+        ValidationTeacher.validationsRaTeacher(teach);
+
         } else if (Professor.getProfessorLista().containsKey(professor.getRa())) {
             alert.setContentText("Professor já cadastrado com este RA.");
             alert.setTitle("Cadastro de Professor");

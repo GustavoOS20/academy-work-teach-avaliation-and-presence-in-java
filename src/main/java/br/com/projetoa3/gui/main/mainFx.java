@@ -1,13 +1,13 @@
 package br.com.projetoa3.gui.main;
 import br.com.projetoa3.bancodedados.*;
 import br.com.projetoa3.bancodedados.consurmers.ConsumerDbStudent;
+import br.com.projetoa3.bancodedados.interfacedb.IDBStudent;
 import br.com.projetoa3.modelo.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -26,18 +26,18 @@ public class mainFx extends Application {
     }
 
     public static void main(String[] args) {
-        ProfessorCrud professorCrud = new ProfessorCrud();
-        professorCrud.criarTabelaProfessores();
-        Professor.setProfessorLista(professorCrud.listarProfessores());
+        TeacherServiceDb teacherServiceDb = new TeacherServiceDb();
+        teacherServiceDb.criarTabelaProfessores();
+        Professor.setProfessorLista(teacherServiceDb.listarProfessores());
 
-        TurmaCrud turmasCrud = new TurmaCrud();
+        ClassSchServiceDb turmasCrud = new ClassSchServiceDb();
         turmasCrud.criarTabelaTurmas();
         Turmas.setTurmas(turmasCrud.listarTurmas());
         for (Map.Entry<String, Turmas> entry : Turmas.getTurmas().entrySet()) {
             Turmas.getTurmasObservable().add(entry.getValue());
         }
 
-        ServiceDBStudent serviceDBStudent = new AlunosCrud();
+        IDBStudent serviceDBStudent = new StudentServiceDb();
         ConsumerDbStudent consumerDbStudent = new ConsumerDbStudent(serviceDBStudent);
         consumerDbStudent.createConsume();
         Alunos.setLista(alunosCrud.listarAlunos());
@@ -45,16 +45,16 @@ public class mainFx extends Application {
             Alunos.getListaObservable().add(entry2.getValue());
         }
 
-        NotasCrud notasCrud = new NotasCrud();
-        notasCrud.criarTabelaNotas();
-        Notas.setNotasPorAluno(notasCrud.listarNotas());
+        NotesServiceDb notesServiceDb = new NotesServiceDb();
+        notesServiceDb.createTable();
+        Notas.setNotasPorAluno(notesServiceDb.listarNotas());
         for (Map.Entry<String, Notas> entry3 : Notas.getNotasPorAluno().entrySet()) {
             Notas.getNotasObservable().add(entry3.getValue());
         }
 
-        PresencaCrud presencaCrud = new PresencaCrud();
-        presencaCrud.criarTabelas();
-        ListaPresenca.setPresencas(presencaCrud.listarPresencas());
+        PresenceServiceDb presenceService = new PresenceServiceDb();
+        presenceService.criarTabelas();
+        ListaPresenca.setPresencas(presenceService.listarPresencas());
         launch(args);
     }
 }

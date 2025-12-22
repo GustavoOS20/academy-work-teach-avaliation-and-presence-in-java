@@ -1,18 +1,17 @@
 package br.com.projetoa3.bancodedados;
 
-import br.com.projetoa3.modelo.Notas;
+import br.com.projetoa3.bancodedados.consurmers.ConsumerAPIJBDC;
+import br.com.projetoa3.bancodedados.interfacedb.INotes;
+import br.com.projetoa3.modelo.records.Notes;
 
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NotasCrud {
+public class NotesServiceDb implements INotes {
 
-    private final String URL = "jdbc:mysql://localhost:3306/projetoa3?serverTimezone=America/Bahia"; // substitua
-    private final String USUARIO = "root"; // substitua
-    private final String SENHA = "gu7672017";
-
-    public void criarTabelaNotas() {
+    @Override
+    public void createTable() {
         String sql = """
             CREATE TABLE IF NOT EXISTS notas (
                 id int AUTO_INCREMENT PRIMARY KEY,
@@ -25,60 +24,70 @@ public class NotasCrud {
                 );
         """;
 
-        try (Connection conn = DriverManager.getConnection(URL, USUARIO, SENHA);
-             Statement stmt = conn.createStatement()) {
-            stmt.execute(sql);
-            System.out.println("Tabela 'notas' criada com sucesso.");
+        try (Connection conn = ConsumerAPIJBDC.conectar()){
+            if (conn != null) {
+                try(Statement stmt = conn.createStatement()){
+                    stmt.execute(sql);
+                    System.out.println("Tabela 'notas' criada com sucesso.");
+                }
+            }
+            else{
+                System.err.println("Erro ao conectar ao banco de dados.");
+            }
         } catch (SQLException e) {
             System.err.println("Erro ao criar tabela: " + e.getMessage());
         }
     }
 
-    public void inserirNotas(Long ra, int A1, int A2, int A3, int soma, String status) {
+    @Override
+    public void insert(Long ra, int A1, int A2, int A3, int soma, String status) {
         String inserirNota = "INSERT INTO notas (ra, A1, A2, A3, soma,status) VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (Connection conn = DriverManager.getConnection(URL, USUARIO, SENHA);
-             PreparedStatement psInsere = conn.prepareStatement(inserirNota)) {
+        try (Connection conn = ConsumerAPIJBDC.conectar()){
+            assert conn != null;
+             try (PreparedStatement psInsere = conn.prepareStatement(inserirNota)) {
 
-            psInsere.setLong(1, ra);
-            psInsere.setInt(2, A1);
-            psInsere.setInt(3, A2);
-            psInsere.setInt(4, A3);
-            psInsere.setInt(5, soma);
-            psInsere.setString(6, status);
-            psInsere.executeUpdate();
+                 psInsere.setLong(1, ra);
+                 psInsere.setInt(2, A1);
+                 psInsere.setInt(3, A2);
+                 psInsere.setInt(4, A3);
+                 psInsere.setInt(5, soma);
+                 psInsere.setString(6, status);
+                 psInsere.executeUpdate();
 
-            System.out.println("Notas inseridas com sucesso.");
-
+                 System.out.println("Notas inseridas com sucesso.");
+             }
         } catch (SQLException e) {
             System.err.println("Erro ao inserir notas: " + e.getMessage());
         }
     }
 
-    public Map<Long, Notas> listarNotas() {
-        Map<Long, Notas> notasMap = new HashMap<>();
+        @Override
+    public Map<Long, Notes> listNotes() {
+        Map<Long, Notes> notasMap = new HashMap<>();
         String sql = "SELECT * FROM notas";
 
-        try (Connection conn = DriverManager.getConnection(URL, USUARIO, SENHA);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            ResultSet rs = stmt.executeQuery();
+        try (Connection conn = ConsumerAPIJBDC.conectar()){
+            assert conn != null;
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                ResultSet rs = stmt.executeQuery();
 
-            while (rs.next()) {
-                Notas notas = new Notas(
-                        rs.getInt("A1"),
-                        rs.getInt("A2"),
-                        rs.getInt("A3")
-                );
-                Long ra = rs.getLong("ra");
-                notasMap.put(ra, notas);
+                while (rs.next()) {
+                    Notes notes = new Notes(
+                            rs.getInt("A1"),
+                            rs.getInt("A2"),
+                            rs.getInt("A3")
+                    );
+                    Long ra = rs.getLong("ra");
+                    notasMap.put(ra, notes);
+                }
             }
-
         } catch (SQLException e) {
             System.err.println("Erro ao listar notas por RA: " + e.getMessage());
         }
         return notasMap;
     }
-
+/*
 public void buscarNotasPorId(int idNota) {
     String sql = """
             SELECT n.id, a.nome, a.ra, n.A1, n.A2, n.A3, n.soma
@@ -134,23 +143,26 @@ public void atualizarNotas(int idNota, double novaA1, double novaA2, double nova
         System.err.println("Erro ao atualizar notas: " + e.getMessage());
     }
 }
-
-public void excluirNotas(int ra) {
+*/
+@Override
+public void delete(String ra) {
     String sql = "DELETE FROM notas WHERE ra = ?";
 
-    try (Connection conn = DriverManager.getConnection(URL, USUARIO, SENHA);
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
+    try (Connection conn = ConsumerAPIJBDC.conectar()){
+             assert conn != null;
+             try (PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-        stmt.setInt(1, ra);
-        int afetados = stmt.executeUpdate();
+            stmt.setString(1, ra);
+            int afetados = stmt.executeUpdate();
 
-        if (afetados > 0) {
-            System.out.println("Notas excluídas com sucesso.");
-        } else {
-            System.out.println("Nota com ID " + ra + " não encontrada.");
+            if (afetados > 0) {
+                System.out.println("Notas excluídas com sucesso.");
+            } else {
+                System.out.println("Nota com ID " + ra + " não encontrada.");
+            }
+
         }
-
-    } catch (SQLException e) {
+         } catch (SQLException e) {
         System.err.println("Erro ao excluir notas: " + e.getMessage());
     }
 }

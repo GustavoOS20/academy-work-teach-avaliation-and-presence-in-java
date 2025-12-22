@@ -1,6 +1,6 @@
 package br.com.projetoa3.gui.controllers;
 
-import br.com.projetoa3.bancodedados.AlunosCrud;
+import br.com.projetoa3.bancodedados.StudentServiceDb;
 import br.com.projetoa3.modelo.Alunos;
 import br.com.projetoa3.modelo.Professor;
 import br.com.projetoa3.modelo.Turmas;
@@ -71,7 +71,7 @@ public class TelaCadastroController implements Initializable {
         Alunos.addStudents(new Alunos(cadastrarNomeId.getText().trim(), raLong, comboBoxTurma.getValue(), Professor.getRaLogado()));
 
         for (Map.Entry<String, Alunos> entry3 : Alunos.getLista().entrySet()) {
-            AlunosCrud managerr = new AlunosCrud();
+            StudentServiceDb managerr = new StudentServiceDb();
             managerr.inserirAluno(entry3.getValue().getRa(), entry3.getValue().getNome(), entry3.getValue().getTurma(), entry3.getValue().getProfessor());
         }
 

@@ -1,21 +1,18 @@
 package br.com.projetoa3.bancodedados;
 
+import br.com.projetoa3.bancodedados.consurmers.ConsumerAPIJBDC;
+import br.com.projetoa3.bancodedados.interfacedb.IDBStudent;
 import br.com.projetoa3.modelo.Alunos;
+import br.com.projetoa3.modelo.records.Student;
 
-import java.io.Serializable;
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AlunosCrud implements ServiceDBStudent{
-    private final String url = "jdbc:mysql://localhost:3306/projetoa3?serverTimezone=America/Bahia"; // substitua
-    private final String usuario = "root"; // substitua
-    private final String senha = "gu7672017"; // substitua
-
+public class StudentServiceDb implements IDBStudent {
     @Override
-    public void createTable(String tableName) {
-        String sql = String.format("CREATE TABLE IF NOT EXISTS %s",tableName) +
+    public void createTable() {
+        String sql = "CREATE TABLE IF NOT EXISTS ALUNOS" +
                 "idA BIGINT AUTO_INCREMENT PRIMARY KEY," +
                 "RA VARCHAR(100)," +
                 "nome VARCHAR(100) NOT NULL," +
@@ -23,22 +20,24 @@ public class AlunosCrud implements ServiceDBStudent{
                 "professor_ra VARCHAR(50)" +
                 ") ENGINE=InnoDB;";
 
-        try (Connection conn = DriverManager.getConnection(url, usuario, senha);
-             Statement stmt = conn.createStatement()) {
-
-            stmt.executeUpdate(sql);
-            System.out.println("Tabela 'alunos' criada com sucesso!");
-
+        try (Connection conn = ConsumerAPIJBDC.conectar()) {
+            if (conn != null) {
+                try (Statement stmt = conn.createStatement()) {
+                    stmt.executeUpdate(sql);
+                }
+            } else {
+                System.err.println("Erro ao conectar ao banco de dados.");
+            }
         } catch (SQLException e) {
             System.err.println("Erro ao criar a tabela: " + e.getMessage());
         }
     }
-
     @Override
     public void insert(Long ra, String nome, String turmaId, String professor_ra) {
         String sql = "INSERT INTO alunos (RA, nome, turmaId, professor_ra) VALUES (?, ?, ?, ?)";
-        try (Connection conn = DriverManager.getConnection(url, usuario, senha);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConsumerAPIJBDC.conectar()){
+            assert conn != null;
+            PreparedStatement stmt = conn.prepareStatement(sql); {
 
             stmt.setLong(1, ra);
             stmt.setString(2, nome);
@@ -47,31 +46,32 @@ public class AlunosCrud implements ServiceDBStudent{
 
             stmt.executeUpdate();
             System.out.println("Aluno inserido com sucesso!");
-
+}
         } catch (SQLException e) {
             System.err.println("Erro ao inserir aluno: " + e.getMessage());
         }
     }
 
     @Override
-    public Map<String,Alunos>listTables() {
-        Map<String, Alunos> alunosMap = new HashMap<>(); // Recebe o mapa de alunos
+    public Map<String,Student>listTables() {
+        Map<String, Student> alunosMap = new HashMap<>(); // Recebe o mapa de alunos
         String sql = "SELECT * FROM alunos";
-        try (Connection conn = DriverManager.getConnection(url, usuario, senha);
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
-                Long ra = Long.parseLong(rs.getString("RA"));
+        try (Connection conn = ConsumerAPIJBDC.conectar()){
+            assert conn != null;
+            Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql);{
+                while (rs.next()) {
+                    long ra = Long.parseLong(rs.getString(rs.findColumn("RA")));
+                            Student aluno = new Student(
+                                    rs.getString("nome"),
+                                    ra,
+                                    rs.getString("turmaId"),
+                                    rs.getString("professor_ra"));
 
-                Alunos aluno = new Alunos(
-                        rs.getString("nome"),
-                       ra,
-                        rs.getString("turmaId"),
-                        rs.getString("professor_ra"));
-                String raTurma = rs.getString("RA") + "-"+ rs.getString("turmaId");
-                alunosMap.put(raTurma, aluno);
+                    String raTurma = rs.getString("RA") + "-" + rs.getString("turmaId");
+                    alunosMap.put(raTurma, aluno);
+                }
             }
-
         } catch (SQLException e) {
             System.err.println("Erro ao listar alunos: " + e.getMessage());
         }
@@ -151,18 +151,18 @@ public class AlunosCrud implements ServiceDBStudent{
     @Override
    public void delete(String ra) {
         String sql = "DELETE FROM alunos WHERE RA = ?";
-        try (Connection conn = DriverManager.getConnection(url, usuario, senha);
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConsumerAPIJBDC.conectar()){
+            assert conn != null;
+            PreparedStatement stmt = conn.prepareStatement(sql);{
+                stmt.setString(1, ra);
+                int rows = stmt.executeUpdate();
 
-            stmt.setString(1, ra);
-            int rows = stmt.executeUpdate();
-
-            if (rows > 0) {
-                System.out.println("Aluno excluído com sucesso.");
-            } else {
-                System.out.println("Aluno com RA " + ra + " não encontrado.");
+                if (rows > 0) {
+                    System.out.println("Aluno excluído com sucesso.");
+                } else {
+                    System.out.println("Aluno com RA " + ra + " não encontrado.");
+                }
             }
-
         } catch (SQLException e) {
             System.err.println("Erro ao excluir aluno: " + e.getMessage());
         }

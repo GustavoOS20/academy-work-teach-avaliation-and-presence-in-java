@@ -1,6 +1,7 @@
 package br.com.projetoa3.gui.controllers;
 
-import br.com.projetoa3.bancodedados.NotasCrud;
+import br.com.projetoa3.bancodedados.NotesServiceDb;
+import br.com.projetoa3.modelo.records.Notes;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -10,7 +11,6 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.net.URL;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 public class TelaCadastrarNotasController implements Initializable {
@@ -76,11 +76,11 @@ public class TelaCadastrarNotasController implements Initializable {
                 alert.showAndWait();
                 return;
             }
-            Notas novaNota = new Notas(notaA1, notaA2, notaA3);
+            Notes novaNota = new Notes(notaA1, notaA2, notaA3);
             String raStr = String.valueOf(alunoSelecionado.getRa());
             String chaveTurma = raStr + "-" + alunoSelecionado.getTurma();
                     Notas.adicionarNota(chaveTurma, novaNota);
-                        NotasCrud manager = new NotasCrud();
+                        NotesServiceDb manager = new NotesServiceDb();
             manager.inserirNotas(
                     chaveTurma,
                     novaNota.getNotaA1(),

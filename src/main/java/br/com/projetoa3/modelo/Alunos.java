@@ -3,14 +3,14 @@ package br.com.projetoa3.modelo;
 import java.util.Map;
 import java.util.HashMap;
 
-import br.com.projetoa3.modelo.interfaces.ServiceStudent;
+import br.com.projetoa3.modelo.interfaces.IStudent;
 import br.com.projetoa3.modelo.records.Student;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class Alunos implements ServiceStudent {
+public class Alunos implements IStudent {
     private static Map<String, Student> lista = new HashMap<>();
-    private static ObservableList<Student> listaObservable = FXCollections.observableArrayList();;
+    private static ObservableList<Student> listaObservable = FXCollections.observableArrayList();
 
     @Override
     public void setList(Map<String, Student> listaAlunos) {
@@ -23,7 +23,7 @@ public class Alunos implements ServiceStudent {
 
     @Override
     public Map<String, Student> getList() {
-        return lista;
+        return this.lista;
     }
 
     public static ObservableList<Student> getListaObservable() {

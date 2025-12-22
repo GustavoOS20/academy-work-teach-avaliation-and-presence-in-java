@@ -1,30 +1,23 @@
 package br.com.projetoa3.modelo;
 
+import br.com.projetoa3.modelo.interfaces.ITeach;
+import br.com.projetoa3.modelo.records.Teach;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Professor {
+public class Professor implements ITeach {
     private static String nomeLogado;
     private static String raLogado;
-    private  String email;
-    private  String senha;
-    private  String nome;
-    private  String ra;
-    private static Map<String, Professor> professorLista = new HashMap<>();
-    private static ObservableList<Professor> professorListaObservable = FXCollections.observableArrayList();
 
-    public Professor(String nome, String ra, String email, String senha) {
-        this.nome = nome;
-        this.ra = ra;
-        this.email = email;
-        this.senha = senha;
-    }
+    private static Map<String, Teach> professorLista = new HashMap<>();
+    private static ObservableList<Teach> professorListaObservable = FXCollections.observableArrayList();
 
-    public static void setProfessorLista(Map<String, Professor> professorLista) {
+
+
+    public static void setProfessorLista(Map<String, Teach> professorLista) {
         Professor.professorLista = professorLista;
     }
 
@@ -44,58 +37,13 @@ public class Professor {
         Professor.raLogado = raLogado;
     }
 
-    public static Map<String, Professor> getProfessorLista() {
+    public static Map<String, Teach> getProfessorLista() {
         return professorLista;
     }
 
-    public void adicionarProfessor(Professor professor) {
-        professorLista.put(professor.getRa(), professor);
+    @Override
+    public void addTeach(Teach professor) {
+        professorLista.put(professor.ra(), professor);
         professorListaObservable.add(professor);
     }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getRa() {
-        return ra;
-    }
-
-    public void setRa(String ra) {
-        this.ra = ra;
-    }
-
-    public boolean validarEmail() {
-
-if(email != null && email.contains("@") && email.contains(".") && email.contains("com") && email.length() >= 10 && email.length() <= 50){
-
-           return true;
-        }else{
-
-            return false;
-        }
-    }
-
-    public boolean validarSenha() {
-        if (senha != null && senha.length() >= 6) {
-
-            return true;
-        }else {
-
-            return false;
-        }
-
-    }
-    public  String getEmail() {
-        return email;
-    }
-
-    public  String getSenha() {
-        return senha;
-    }
-
 }

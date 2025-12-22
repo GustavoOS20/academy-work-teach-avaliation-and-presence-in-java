@@ -1,54 +1,36 @@
 package br.com.projetoa3.modelo;
 
+import br.com.projetoa3.modelo.interfaces.IClass;
+import br.com.projetoa3.modelo.records.ClassSchool;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.scene.control.Alert;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Turmas {
-    private static Map<String, Turmas> turmas = new HashMap<>();
-    private static ObservableList<Turmas> turmasObservable = FXCollections.observableArrayList();
-    private String nome;
-    private String professor;
+public class Turmas implements IClass {
+    private static Map<String, ClassSchool> turmas = new HashMap<>();
+    private static ObservableList<ClassSchool> turmasObservable = FXCollections.observableArrayList();
 
-    public Turmas( String nome, String professor) {
-        this.nome = nome;
-        this.professor = professor;
-    }
-
-    public static void setTurmas(Map<String, Turmas> turmas) {
+    public static void setTurmas(Map<String, ClassSchool> turmas) {
         Turmas.turmas = turmas;
     }
 
-    public static Map<String, Turmas> getTurmas() {
+    public static Map<String, ClassSchool> getTurmas() {
         return turmas;
     }
 
-    public String getTurma() {
-        return nome;
-    }
-
-    public String getProfessor() {
-        return professor;
-    }
-
-    public static ObservableList<Turmas> getTurmasObservable() {
+    public static ObservableList<ClassSchool> getTurmasObservable() {
         return turmasObservable;
     }
 
-    public static void adicionarTurma(String numero, String nomeTurma, String professor) {
+    @Override
+    public void addClass(String numero, ClassSchool classSch) {
         if (turmas.containsKey(numero)) {
-            Alert alert = new Alert(Alert.AlertType.ERROR);
-            alert.setTitle("Erro");
-            alert.setHeaderText("Turma já existe");
-            alert.setContentText("A turma " + nomeTurma + " já está cadastrada.");
-            alert.showAndWait();
+            System.out.println("erro");
         } else {
-            Turmas turma = new Turmas(nomeTurma, professor);
-            turmas.put(numero, turma);
-            turmasObservable.add(turma);
+            turmas.put(numero, classSch);
+            turmasObservable.add(classSch);
         }
     }
 }
