@@ -1,7 +1,7 @@
 package br.com.projetoa3.bancodedados;
 
 import br.com.projetoa3.bancodedados.consurmers.ConsumerAPIJBDC;
-import br.com.projetoa3.bancodedados.interfacedb.IPresence;
+import br.com.projetoa3.bancodedados.interfacedb.IPresenceDb;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
@@ -10,7 +10,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PresenceServiceDb implements IPresence {
+public class PresenceDbServiceDb implements IPresenceDb {
 
     @Override
     public void createTable() {

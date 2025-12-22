@@ -1,18 +1,20 @@
 package br.com.projetoa3.gui.controllers;
 
 import br.com.projetoa3.bancodedados.TeacherServiceDb;
+import br.com.projetoa3.bancodedados.consurmers.ConsumeDbTeacher;
+import br.com.projetoa3.bancodedados.interfacedb.ITeacherDb;
+import br.com.projetoa3.gui.alerts.AlertsClass;
 import br.com.projetoa3.gui.validations.ValidationTeacher;
+import br.com.projetoa3.gui.validations.ValidationsEmailPassword;
 import br.com.projetoa3.modelo.Professor;
+import br.com.projetoa3.modelo.consumersmodel.ConsumeTeach;
+import br.com.projetoa3.modelo.interfaces.ITeach;
 import br.com.projetoa3.modelo.records.Teach;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.stage.Stage;
 
 import java.net.URL;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 public class CadastroProfessorControllers implements Initializable {
@@ -35,52 +37,38 @@ public class CadastroProfessorControllers implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         BotaoCadastrar.setOnAction(event -> {
-            salvarDados();
+            if(salvarDados()){
+                ITeacherDb teacherDb = new TeacherServiceDb();
+                ConsumeDbTeacher consumeDbTeacher = new ConsumeDbTeacher(teacherDb);
+                consumeDbTeacher.insertConsume(RA.getText(), Nome.getText(), Email.getText(), Senha.getText());
+            }
         });
 
     }
+
     @FXML
-    protected void salvarDados() {
-        TeacherServiceDb crud = new TeacherServiceDb();
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+    protected Boolean salvarDados() {
+        AlertsClass alertsClass = new AlertsClass();
+        boolean salvar = false;
         Teach teach = new Teach(Nome.getText(), RA.getText(), Email.getText(), Senha.getText());
         ValidationTeacher.validationFieldTeacher(teach);
         ValidationTeacher.validationsRaTeacher(teach);
+        ValidationTeacher.validationsEmailRA(teach);
+        ValidationsEmailPassword.validationsEmail(teach.email());
 
-        } else if (Professor.getProfessorLista().containsKey(professor.getRa())) {
-            alert.setContentText("Professor já cadastrado com este RA.");
-            alert.setTitle("Cadastro de Professor");
-            alert.setHeaderText("Erro no cadastro");
-            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-            alert.showAndWait();
-        } else if(Professor.getProfessorLista().containsKey(professor.getEmail())){
-            alert.setContentText("Professor já cadastrado com este email.");
-            alert.setTitle("Cadastro de Professor");
-            alert.setHeaderText("Erro no cadastro");
-            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-            alert.showAndWait();
-
-    }else if (professor.validarEmail() && professor.validarSenha()) {
-            professor.adicionarProfessor(professor);
-            for(Map.Entry<String, Professor> entry : Professor.getProfessorLista().entrySet()) {
-                crud.inserirProfessor(entry.getKey(), entry.getValue().getNome(), entry.getValue().getEmail(), entry.getValue().getSenha());
-            }
-            alert.setContentText("Clique em OK para ir a tela de login.");
-            alert.setTitle("Cadastro de Professor");
-            alert.setHeaderText("Professor cadastrado com sucesso!");
-            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-            alert.showAndWait();
-            Stage currentStage = (Stage) BotaoCadastrar.getScene().getWindow();
-            currentStage.close();
+        if (ValidationsEmailPassword.validationsPassword(teach.senha())) {
+            ITeach teachModel = new Professor();
+            ConsumeTeach consumeTeach = new ConsumeTeach(teachModel);
+            consumeTeach.consumeAddTeach(teach);
+            alertsClass.alertInformationWithButton(
+                    "Cadastro de Professor",
+                    "Clique em OK para ir a tela de login.",
+                    "Professor cadastrado com sucesso!",
+                    BotaoCadastrar);
+            salvar = true;
         } else {
-            alert.setContentText("Email ou senha inválidos. A senha deve ter pelo menos 6 caracteres.");
-            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-            alert.showAndWait();
+            alertsClass.alertInformation("Cadastro de Professor", "Senha invalida", "Erro no Cadastro");
         }
-
-        }
+        return salvar;
     }
+}

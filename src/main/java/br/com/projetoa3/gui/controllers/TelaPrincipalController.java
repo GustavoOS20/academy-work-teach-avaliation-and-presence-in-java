@@ -1,6 +1,6 @@
 package br.com.projetoa3.gui.controllers;
 
-import br.com.projetoa3.bancodedados.PresenceServiceDb;
+import br.com.projetoa3.bancodedados.PresenceDbServiceDb;
 import br.com.projetoa3.modelo.*;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -140,12 +140,12 @@ public class TelaPrincipalController implements Initializable {
         Alunos.getListaObservable().forEach(aluno -> {
             BooleanProperty prop = presencaData.computeIfAbsent(aluno.getRa(), ra -> new SimpleBooleanProperty(false));
             prop.addListener((obs, oldVal, newVal) -> {
-                PresenceServiceDb crud = new PresenceServiceDb();
+                PresenceDbServiceDb crud = new PresenceDbServiceDb();
                 crud.atualizarPresenca(aluno.getRa(), data, newVal);
             });
         });
 
-    PresenceServiceDb criador = new PresenceServiceDb();
+    PresenceDbServiceDb criador = new PresenceDbServiceDb();
         Alunos.getListaObservable().forEach(aluno -> {
                     criador.criarTabelas();
                     for (Map.Entry<Long, BooleanProperty> entry : presencaData.entrySet()) {

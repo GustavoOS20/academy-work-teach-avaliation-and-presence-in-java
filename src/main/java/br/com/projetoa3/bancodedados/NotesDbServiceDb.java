@@ -1,14 +1,14 @@
 package br.com.projetoa3.bancodedados;
 
 import br.com.projetoa3.bancodedados.consurmers.ConsumerAPIJBDC;
-import br.com.projetoa3.bancodedados.interfacedb.INotes;
+import br.com.projetoa3.bancodedados.interfacedb.INotesDb;
 import br.com.projetoa3.modelo.records.Notes;
 
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NotesServiceDb implements INotes {
+public class NotesDbServiceDb implements INotesDb {
 
     @Override
     public void createTable() {

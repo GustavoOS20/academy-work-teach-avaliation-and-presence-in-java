@@ -1,6 +1,7 @@
 package br.com.projetoa3.gui.validations;
 
 import br.com.projetoa3.gui.alerts.AlertsClass;
+import br.com.projetoa3.modelo.Professor;
 import br.com.projetoa3.modelo.records.Teach;
 
 
@@ -21,7 +22,12 @@ public class ValidationTeacher {
         }
     }
 
-    public static void validationsEmailPassword(Teach teach){
-        if(){}
+    public static void validationsEmailRA(Teach teach){
+        if(Professor.getProfessorLista().containsKey(teach.email()) || Professor.getProfessorLista().containsKey(teach.ra())){
+            AlertsClass alertsClass = new AlertsClass();
+            alertsClass.alertInformation("Cadastro de Professor", "Professor já cadastrado com este email ou RA", "Erro no cadastro");
+            throw new RuntimeException("Ra ou email ja cadastrado");
+
+        }
     }
-}
+    }

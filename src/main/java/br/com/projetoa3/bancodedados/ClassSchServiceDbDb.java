@@ -1,14 +1,13 @@
 package br.com.projetoa3.bancodedados;
 import br.com.projetoa3.bancodedados.consurmers.ConsumerAPIJBDC;
-import br.com.projetoa3.bancodedados.interfacedb.IClassSchool;
-import br.com.projetoa3.modelo.Turmas;
+import br.com.projetoa3.bancodedados.interfacedb.IClassSchoolDb;
 import br.com.projetoa3.modelo.records.ClassSchool;
 
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ClassSchServiceDb implements IClassSchool {
+public class ClassSchServiceDbDb implements IClassSchoolDb {
     @Override
     public void createTable() {
         String sql = """

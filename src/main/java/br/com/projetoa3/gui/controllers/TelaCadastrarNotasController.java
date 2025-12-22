@@ -1,6 +1,6 @@
 package br.com.projetoa3.gui.controllers;
 
-import br.com.projetoa3.bancodedados.NotesServiceDb;
+import br.com.projetoa3.bancodedados.NotesDbServiceDb;
 import br.com.projetoa3.modelo.records.Notes;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -80,7 +80,7 @@ public class TelaCadastrarNotasController implements Initializable {
             String raStr = String.valueOf(alunoSelecionado.getRa());
             String chaveTurma = raStr + "-" + alunoSelecionado.getTurma();
                     Notas.adicionarNota(chaveTurma, novaNota);
-                        NotesServiceDb manager = new NotesServiceDb();
+                        NotesDbServiceDb manager = new NotesDbServiceDb();
             manager.inserirNotas(
                     chaveTurma,
                     novaNota.getNotaA1(),

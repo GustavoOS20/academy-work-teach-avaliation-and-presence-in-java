@@ -1,10 +1,10 @@
 package br.com.projetoa3.bancodedados.consurmers;
 
-import br.com.projetoa3.bancodedados.interfacedb.IClassSchool;
+import br.com.projetoa3.bancodedados.interfacedb.IClassSchoolDb;
 
 public class ConsumeDbClassScho {
-    IClassSchool serviceClass;
-    public ConsumeDbClassScho(IClassSchool serviceClass){
+    IClassSchoolDb serviceClass;
+    public ConsumeDbClassScho(IClassSchoolDb serviceClass){
         this.serviceClass = serviceClass;
     }
 

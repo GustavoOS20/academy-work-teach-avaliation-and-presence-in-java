@@ -1,12 +1,12 @@
 package br.com.projetoa3.bancodedados.consurmers;
 
-import br.com.projetoa3.bancodedados.interfacedb.IPresence;
+import br.com.projetoa3.bancodedados.interfacedb.IPresenceDb;
 
 import java.time.LocalDate;
 
 public class ConsumeDbPresence {
-    IPresence servicePresence;
-    public ConsumeDbPresence(IPresence servicePresence){
+    IPresenceDb servicePresence;
+    public ConsumeDbPresence(IPresenceDb servicePresence){
         this.servicePresence = servicePresence;
     }
 

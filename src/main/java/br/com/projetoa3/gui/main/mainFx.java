@@ -30,7 +30,7 @@ public class mainFx extends Application {
         teacherServiceDb.criarTabelaProfessores();
         Professor.setProfessorLista(teacherServiceDb.listarProfessores());
 
-        ClassSchServiceDb turmasCrud = new ClassSchServiceDb();
+        ClassSchServiceDbDb turmasCrud = new ClassSchServiceDbDb();
         turmasCrud.criarTabelaTurmas();
         Turmas.setTurmas(turmasCrud.listarTurmas());
         for (Map.Entry<String, Turmas> entry : Turmas.getTurmas().entrySet()) {
@@ -45,14 +45,14 @@ public class mainFx extends Application {
             Alunos.getListaObservable().add(entry2.getValue());
         }
 
-        NotesServiceDb notesServiceDb = new NotesServiceDb();
+        NotesDbServiceDb notesServiceDb = new NotesDbServiceDb();
         notesServiceDb.createTable();
         Notas.setNotasPorAluno(notesServiceDb.listarNotas());
         for (Map.Entry<String, Notas> entry3 : Notas.getNotasPorAluno().entrySet()) {
             Notas.getNotasObservable().add(entry3.getValue());
         }
 
-        PresenceServiceDb presenceService = new PresenceServiceDb();
+        PresenceDbServiceDb presenceService = new PresenceDbServiceDb();
         presenceService.criarTabelas();
         ListaPresenca.setPresencas(presenceService.listarPresencas());
         launch(args);

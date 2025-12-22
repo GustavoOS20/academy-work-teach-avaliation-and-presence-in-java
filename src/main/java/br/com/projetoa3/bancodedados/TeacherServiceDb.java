@@ -1,6 +1,6 @@
 package br.com.projetoa3.bancodedados;
 
-import br.com.projetoa3.bancodedados.interfacedb.ITeacher;
+import br.com.projetoa3.bancodedados.interfacedb.ITeacherDb;
 import br.com.projetoa3.modelo.records.Teach;
 
 import java.sql.*;
@@ -9,7 +9,7 @@ import java.util.Map;
 
 import static br.com.projetoa3.bancodedados.consurmers.ConsumerAPIJBDC.conectar;
 
-public class TeacherServiceDb implements ITeacher {
+public class TeacherServiceDb implements ITeacherDb {
 
     @Override
     public void createTable() {

@@ -1,6 +1,6 @@
 package br.com.projetoa3.gui.controllers;
 
-import br.com.projetoa3.bancodedados.ClassSchServiceDb;
+import br.com.projetoa3.bancodedados.ClassSchServiceDbDb;
 import br.com.projetoa3.modelo.Professor;
 import br.com.projetoa3.modelo.Turmas;
 import javafx.fxml.FXML;
@@ -50,7 +50,7 @@ public class TelaAdicionarTurmaController implements Initializable {
         }
         Turmas.adicionarTurma(idAleatorio, TurmaDigitada.getText(), Professor.getRaLogado());
         for (Map.Entry<String, Turmas> entry2 : Turmas.getTurmas().entrySet()) {
-            ClassSchServiceDb turmas = new ClassSchServiceDb();
+            ClassSchServiceDbDb turmas = new ClassSchServiceDbDb();
             turmas.inserirTurma(entry2.getKey(), entry2.getValue().getTurma(), entry2.getValue().getProfessor());
         }
         Alert alert = new Alert(Alert.AlertType.INFORMATION);

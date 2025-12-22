@@ -1,8 +1,8 @@
 package br.com.projetoa3.gui.controllers;
 
 import br.com.projetoa3.bancodedados.StudentServiceDb;
-import br.com.projetoa3.bancodedados.NotesServiceDb;
-import br.com.projetoa3.bancodedados.PresenceServiceDb;
+import br.com.projetoa3.bancodedados.NotesDbServiceDb;
+import br.com.projetoa3.bancodedados.PresenceDbServiceDb;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
@@ -64,8 +64,8 @@ public class RemoverAlunoControllers implements Initializable {
             }
             Integer raInt = Integer.parseInt(ra);
             StudentServiceDb studentServiceDb = new StudentServiceDb();
-            NotesServiceDb notesServiceDb = new NotesServiceDb();
-            PresenceServiceDb presenceService = new PresenceServiceDb();
+            NotesDbServiceDb notesServiceDb = new NotesDbServiceDb();
+            PresenceDbServiceDb presenceService = new PresenceDbServiceDb();
             Alunos.removerAluno(ra);
             studentServiceDb.excluirAluno(ra);
             notesServiceDb.excluirNotas(raInt);

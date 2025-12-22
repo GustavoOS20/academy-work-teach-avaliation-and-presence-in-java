@@ -1,10 +1,10 @@
 package br.com.projetoa3.bancodedados.consurmers;
 
-import br.com.projetoa3.bancodedados.interfacedb.ITeacher;
+import br.com.projetoa3.bancodedados.interfacedb.ITeacherDb;
 
 public class ConsumeDbTeacher {
-    ITeacher serviceTeacher;
-    public ConsumeDbTeacher(ITeacher serviceTeacher){
+    ITeacherDb serviceTeacher;
+    public ConsumeDbTeacher(ITeacherDb serviceTeacher){
         this.serviceTeacher = serviceTeacher;
     }
 

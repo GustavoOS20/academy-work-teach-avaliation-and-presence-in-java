@@ -1,11 +1,11 @@
 package br.com.projetoa3.bancodedados.consurmers;
 
-import br.com.projetoa3.bancodedados.interfacedb.INotes;
+import br.com.projetoa3.bancodedados.interfacedb.INotesDb;
 
 public class ConsumeDbNotes {
-    INotes serviceNotes;
+    INotesDb serviceNotes;
 
-    public ConsumeDbNotes(INotes serviceNotes){
+    public ConsumeDbNotes(INotesDb serviceNotes){
         this.serviceNotes = serviceNotes;
     }
 
