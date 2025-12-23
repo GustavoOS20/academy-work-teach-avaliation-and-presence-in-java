@@ -16,7 +16,7 @@ public class Turmas implements IClass {
         Turmas.turmas = turmas;
     }
 
-    public static Map<String, ClassSchool> getTurmas() {
+    public Map<String, ClassSchool> getClassSco() {
         return turmas;
     }
 
