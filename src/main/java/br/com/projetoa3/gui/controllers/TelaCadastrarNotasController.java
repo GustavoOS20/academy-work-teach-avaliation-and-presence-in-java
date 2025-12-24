@@ -1,26 +1,30 @@
 package br.com.projetoa3.gui.controllers;
 
 import br.com.projetoa3.bancodedados.NotesDbServiceDb;
+import br.com.projetoa3.bancodedados.consurmers.ConsumeDbNotes;
+import br.com.projetoa3.bancodedados.interfacedb.INotesDb;
+import br.com.projetoa3.gui.alerts.AlertsClass;
+import br.com.projetoa3.gui.validations.ValidationsAddNotes;
+import br.com.projetoa3.modelo.consumersmodel.ConsumeNotes;
+import br.com.projetoa3.modelo.interfaces.INotes;
 import br.com.projetoa3.modelo.records.Notes;
+import br.com.projetoa3.modelo.records.Student;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import br.com.projetoa3.modelo.Notas;
 import br.com.projetoa3.modelo.Alunos;
-import javafx.scene.image.Image;
-import javafx.stage.Stage;
-
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class TelaCadastrarNotasController implements Initializable {
-    private Alunos alunoSelecionado;
+    private Student alunoSelecionado;
 
     @FXML
     private Button confirmarCadastro;
 
     @FXML
-    private ListView<Alunos> ListaNomesNotas;
+    private ListView<Student> ListaNomesNotas;
 
     @FXML
     private TextField cadastrarNotaA1;
@@ -58,65 +62,43 @@ public class TelaCadastrarNotasController implements Initializable {
     @FXML
     public void cadastrarNotas() {
         try {
+            AlertsClass alertsClass = new AlertsClass();
+            INotes iNotes = new Notas();
+            ConsumeNotes consumeNotes = new ConsumeNotes(iNotes);
+            INotesDb iNotesDb = new NotesDbServiceDb();
+            ConsumeDbNotes consumeDbNotes = new ConsumeDbNotes(iNotesDb);
             int notaA1 = Integer.parseInt(cadastrarNotaA1.getText());
             int notaA2 = Integer.parseInt(cadastrarNotaA2.getText());
             int notaA3 = Integer.parseInt(cadastrarNotaA3.getText());
-            if (notaA1 < 0 || notaA1 > 30 || notaA2 < 0 || notaA2 > 30 || notaA3 < 0 || notaA3 > 40) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "As notas A1 e A2 devem estar entre 0 e 30, e A3 deve estar entre 0 e 40.");
-                alert.setTitle("Erro de Validação");
-                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-                stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-                alert.showAndWait();
-                return;
-            }else if (cadastrarNotaA1.getText().isEmpty() || cadastrarNotaA2.getText().isEmpty() || cadastrarNotaA3.getText().isEmpty()) {
-                Alert alert = new Alert(Alert.AlertType.ERROR, "Por favor, preencha todos os campos de notas.");
-                alert.setTitle("Erro de Validação");
-                Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-                stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-                alert.showAndWait();
-                return;
-            }
+
+            ValidationsAddNotes.validationsAddNotes(notaA1, notaA2, notaA3);
+            ValidationsAddNotes.validationFields(cadastrarNotaA1, cadastrarNotaA2, cadastrarNotaA3);
             Notes novaNota = new Notes(notaA1, notaA2, notaA3);
-            String raStr = String.valueOf(alunoSelecionado.getRa());
-            String chaveTurma = raStr + "-" + alunoSelecionado.getTurma();
-                    Notas.adicionarNota(chaveTurma, novaNota);
-                        NotesDbServiceDb manager = new NotesDbServiceDb();
-            manager.inserirNotas(
-                    chaveTurma,
-                    novaNota.getNotaA1(),
-                    novaNota.getNotaA2(),
-                    novaNota.getNotaA3(),
-                    novaNota.getSomaNota(),
-                    novaNota.getStatus()
-            );
-                cadastrarNotaA1.clear();
+            int soma = novaNota.notaA1() + novaNota.notaA2() + novaNota.notaA3();
+            String raStr = String.valueOf(alunoSelecionado.ra());
+            String chaveTurma = raStr + "-" + alunoSelecionado.turma();
+            consumeNotes.consumeAddNotes(raStr, novaNota);
+            consumeDbNotes.insertConsume(chaveTurma, novaNota.notaA1(), novaNota.notaA2(), novaNota.notaA3(), soma, novaNota.getStatus());
+            cadastrarNotaA1.clear();
             cadastrarNotaA2.clear();
             cadastrarNotaA3.clear();
 
             exibirNotasDoAluno(alunoSelecionado);
 
-            Alert alert = new Alert(Alert.AlertType.INFORMATION, "Notas cadastradas com sucesso para o aluno: " + alunoSelecionado.getNome());
-            alert.setTitle("Cadastro de Notas");
-            Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-            alert.showAndWait();
+            alertsClass.alertInformation("Cadastro de notas", "Notas cadastradas com sucesso para o aluno: " + alunoSelecionado.nome(), "Cadastro concluído com sucesso");
         } catch (NumberFormatException e) {
-            System.out.println("Erro: Insira apenas números válidos.");
-
+            throw new RuntimeException("Erro: Insira apenas números válidos.");
         }
     }
 
     @FXML
-    private void exibirNotasDoAluno(Alunos aluno) {
-
-        labelNomeSelecionado.setText(aluno.getNome());
-
-
-        Notas notas = Notas.getNotaPorAluno(aluno.getRa()+"-"+aluno.getTurma());
+    private void exibirNotasDoAluno(Student aluno) {
+        labelNomeSelecionado.setText(aluno.nome());
+        Notes notas = Notas.getNotaPorAluno(aluno.ra()+"-"+aluno.turma());
         if (notas != null) {
-            cadastrarNotaA1.setText(String.valueOf(notas.getNotaA1()));
-            cadastrarNotaA2.setText(String.valueOf(notas.getNotaA2()));
-            cadastrarNotaA3.setText(String.valueOf(notas.getNotaA3()));
+            cadastrarNotaA1.setText(String.valueOf(notas.notaA1()));
+            cadastrarNotaA2.setText(String.valueOf(notas.notaA2()));
+            cadastrarNotaA3.setText(String.valueOf(notas.notaA3()));
         } else {
             cadastrarNotaA1.clear();
             cadastrarNotaA2.clear();

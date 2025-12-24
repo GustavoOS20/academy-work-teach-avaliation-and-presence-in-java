@@ -13,7 +13,7 @@ public class ConsumeDbNotes {
         this.serviceNotes.createTable();
     }
 
-    public void insertConsume(Long ra, int A1, int A2, int A3, int soma, String status ){
+    public void insertConsume(String ra, int A1, int A2, int A3, int soma, String status ){
         this.serviceNotes.insert(ra, A1, A2, A3, soma, status);
     }
 

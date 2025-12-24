@@ -1,17 +1,23 @@
 package br.com.projetoa3.gui.controllers;
 
 import br.com.projetoa3.bancodedados.StudentServiceDb;
+import br.com.projetoa3.bancodedados.consurmers.ConsumerDbStudent;
+import br.com.projetoa3.bancodedados.interfacedb.IDBStudent;
+import br.com.projetoa3.gui.alerts.AlertsClass;
+import br.com.projetoa3.gui.validations.ValidationsRegister;
 import br.com.projetoa3.modelo.Alunos;
 import br.com.projetoa3.modelo.Professor;
 import br.com.projetoa3.modelo.Turmas;
+import br.com.projetoa3.modelo.consumersmodel.ConsumeStudent;
+import br.com.projetoa3.modelo.interfaces.IStudent;
+import br.com.projetoa3.modelo.records.ClassSchool;
+import br.com.projetoa3.modelo.records.Student;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.stage.Stage;
 
 import java.net.URL;
 import java.util.Map;
@@ -31,65 +37,44 @@ public class TelaCadastroController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         atualizarTurmasPorProfessor();
-        Alunos.getListaObservable().addListener((ListChangeListener<Alunos>) change2 -> {
+        Alunos.getListaObservable().addListener((ListChangeListener<Student>) change2 -> {
             atualizarTurmasPorProfessor();
         });
     }
 
     @FXML
     private void confirmarCadastro() {
-
-        Long raLong = Long.parseLong(cadastrarRAId1.getText().trim());
-
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Cadastro de Aluno");
-        alert.setHeaderText("Confirmação de Cadastro");
-        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-        if (cadastrarNomeId.getText().isEmpty() || cadastrarRAId1.getText().isEmpty() || comboBoxTurma.getValue() == null) {
-            alert.setContentText("Por favor, preencha todos os campos.");
-            stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-            alert.showAndWait();
+        IStudent iStudent = new Alunos();
+        ConsumeStudent consumeStudent = new ConsumeStudent(iStudent);
+        IDBStudent idbStudent = new StudentServiceDb();
+        ConsumerDbStudent consumerDbStudent = new ConsumerDbStudent(idbStudent);
+        AlertsClass alert = new AlertsClass();
+        long raLong = Long.parseLong(cadastrarRAId1.getText().trim());
+        ValidationsRegister.validationRegisterStudents(cadastrarNomeId, cadastrarRAId1, comboBoxTurma);
+        for (Map.Entry<String, Student> entry3 : consumeStudent.consumeList().entrySet()) {
+            if (entry3.getValue().ra() == raLong && entry3.getValue().professor().equals(Professor.getRaLogado()) && entry3.getValue().turma().equals(comboBoxTurma.getValue())) {
+            alert.alertInformation("Erro no cadastro de alunos", "RA já cadastrado. Por favor, insira um RA diferente.", "Cadastro de alunos");
             return;
-        } else if (cadastrarRAId1.getText().length() != 10) {
-            alert.setContentText("Ra invalido. Deve ter 10 dígitos.");
-            stage = (Stage) alert.getDialogPane().getScene().getWindow();
-            stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-            alert.showAndWait();
-            return;
-        }
-        for (Map.Entry<String, Alunos> entry3 : Alunos.getLista().entrySet()) {
-            if (entry3.getValue().getRa().equals(raLong) && entry3.getValue().getProfessor().equals(Professor.getRaLogado()) && entry3.getValue().getTurma().equals(comboBoxTurma.getValue())) {
-                alert.setContentText("RA já cadastrado. Por favor, insira um RA diferente.");
-                stage = (Stage) alert.getDialogPane().getScene().getWindow();
-                stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-                alert.showAndWait();
-                return;
             }
         }
-        Alunos.addStudents(new Alunos(cadastrarNomeId.getText().trim(), raLong, comboBoxTurma.getValue(), Professor.getRaLogado()));
+        consumeStudent.consumeAddStu(new Student(cadastrarNomeId.getText().trim(), raLong, comboBoxTurma.getValue(), Professor.getRaLogado()));
 
-        for (Map.Entry<String, Alunos> entry3 : Alunos.getLista().entrySet()) {
-            StudentServiceDb managerr = new StudentServiceDb();
-            managerr.inserirAluno(entry3.getValue().getRa(), entry3.getValue().getNome(), entry3.getValue().getTurma(), entry3.getValue().getProfessor());
+        for (Map.Entry<String, Student> entry3 : consumeStudent.consumeList().entrySet()) {
+            consumerDbStudent.insertConsume(entry3.getValue().ra(), entry3.getValue().nome(), entry3.getValue().turma(), entry3.getValue().professor());
         }
-
-
-        alert.setHeaderText("Aluno cadastrado com sucesso!\nNome: " + cadastrarNomeId.getText() + "\nRA: " + cadastrarRAId1.getText() + "\nTurma: " + comboBoxTurma.getValue());
-        alert.setContentText("Clique em OK para continuar.");
-        stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
+        alert.alertInformation(
+                "Aluno cadastrado",
+                "Clique em OK para continuar.",
+                "Aluno cadastrado com sucesso!\\nNome: " + cadastrarNomeId.getText() + "\nRA: " + cadastrarRAId1.getText() + "\nTurma: " + comboBoxTurma.getValue());
         cadastrarNomeId.clear();
         cadastrarRAId1.clear();
-        alert.showAndWait();
     }
 
     private void atualizarTurmasPorProfessor() {
         ObservableList<String> turmasFiltPorProfessor = FXCollections.observableArrayList();
-        for (Turmas turma : Turmas.getTurmasObservable()) {
-            if (turma.getProfessor().equals(Professor.getRaLogado())) {
-                turmasFiltPorProfessor.add(turma.getTurma());
+        for (ClassSchool turma : Turmas.getTurmasObservable()) {
+            if (turma.professor().equals(Professor.getRaLogado())) {
+                turmasFiltPorProfessor.add(turma.nome());
             }
         }
         comboBoxTurma.getItems().clear();

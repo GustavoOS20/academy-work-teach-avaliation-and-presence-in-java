@@ -40,7 +40,7 @@ public class NotesDbServiceDb implements INotesDb {
     }
 
     @Override
-    public void insert(Long ra, int A1, int A2, int A3, int soma, String status) {
+    public void insert(String ra, int A1, int A2, int A3, int soma, String status) {
         String inserirNota = "INSERT INTO notas (ra, A1, A2, A3, soma,status) VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = ConsumerAPIJBDC.conectar()){
