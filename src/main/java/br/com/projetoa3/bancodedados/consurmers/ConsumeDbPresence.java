@@ -1,8 +1,10 @@
 package br.com.projetoa3.bancodedados.consurmers;
 
 import br.com.projetoa3.bancodedados.interfacedb.IPresenceDb;
+import javafx.beans.property.BooleanProperty;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 public class ConsumeDbPresence {
     IPresenceDb servicePresence;
@@ -18,8 +20,8 @@ public class ConsumeDbPresence {
         this.servicePresence.insertPresence(id, data, presente);
     }
 
-    public void listConsume(){
-        this.servicePresence.listPresence();
+    public Map<LocalDate, Map<Long, BooleanProperty>> listConsume(){
+        return this.servicePresence.listPresence();
     }
 
     public void updatePresence(Long id, LocalDate data, boolean presente){

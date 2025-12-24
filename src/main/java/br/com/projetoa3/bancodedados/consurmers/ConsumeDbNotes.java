@@ -1,6 +1,9 @@
 package br.com.projetoa3.bancodedados.consurmers;
 
 import br.com.projetoa3.bancodedados.interfacedb.INotesDb;
+import br.com.projetoa3.modelo.records.Notes;
+
+import java.util.Map;
 
 public class ConsumeDbNotes {
     INotesDb serviceNotes;
@@ -17,8 +20,8 @@ public class ConsumeDbNotes {
         this.serviceNotes.insert(ra, A1, A2, A3, soma, status);
     }
 
-    public void listConsume(){
-        this.serviceNotes.listNotes();
+    public Map<String, Notes> listConsume(){
+        return this.serviceNotes.listNotes();
     }
 
     public void deleteConsume(String ra){

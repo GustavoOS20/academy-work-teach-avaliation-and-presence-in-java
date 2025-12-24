@@ -1,13 +1,19 @@
 package br.com.projetoa3.gui.main;
 import br.com.projetoa3.bancodedados.*;
-import br.com.projetoa3.bancodedados.consurmers.ConsumerDbStudent;
-import br.com.projetoa3.bancodedados.interfacedb.IDBStudent;
+import br.com.projetoa3.bancodedados.consurmers.*;
+import br.com.projetoa3.bancodedados.interfacedb.*;
+import br.com.projetoa3.gui.fxmlloader.FxmlLoader;
 import br.com.projetoa3.modelo.*;
+import br.com.projetoa3.modelo.consumersmodel.ConsumeClass;
+import br.com.projetoa3.modelo.consumersmodel.ConsumeNotes;
+import br.com.projetoa3.modelo.consumersmodel.ConsumeStudent;
+import br.com.projetoa3.modelo.interfaces.IClass;
+import br.com.projetoa3.modelo.interfaces.INotes;
+import br.com.projetoa3.modelo.interfaces.IStudent;
+import br.com.projetoa3.modelo.records.ClassSchool;
+import br.com.projetoa3.modelo.records.Notes;
+import br.com.projetoa3.modelo.records.Student;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -16,45 +22,53 @@ import java.util.Map;
 public class mainFx extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/login.fxml"));
-        Scene scene = new Scene(root,460 , 510);
-        primaryStage.setResizable(false);
-        primaryStage.setTitle("Projeto A3 - Lista de Notas e Presenças");
-        primaryStage.setScene(scene);
-        primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-        primaryStage.show();
+        FxmlLoader loader = new FxmlLoader();
+        loader.fxmlLogin(primaryStage);
     }
 
     public static void main(String[] args) {
-        TeacherServiceDb teacherServiceDb = new TeacherServiceDb();
-        teacherServiceDb.criarTabelaProfessores();
-        Professor.setProfessorLista(teacherServiceDb.listarProfessores());
+        ITeacherDb iTeacherDb = new TeacherServiceDb();
+        ConsumeDbTeacher consumeDbTeacher = new ConsumeDbTeacher(iTeacherDb);
+        IClassSchoolDb iClassSchoolDb = new ClassSchServiceDbDb();
+        ConsumeDbClassScho consumeDbClassScho = new ConsumeDbClassScho(iClassSchoolDb);
+        IClass iclass = new Turmas();
+        ConsumeClass consumeClassScho = new ConsumeClass(iclass);
+        IDBStudent serviceDBStudent = new StudentServiceDb();
+        ConsumerDbStudent consumerDbStudent = new ConsumerDbStudent(serviceDBStudent);
+        IStudent iStudent = new Alunos();
+        ConsumeStudent consumeStudent = new ConsumeStudent(iStudent);
+        INotes iNotes = new Notas();
+        ConsumeNotes consumeNotes = new ConsumeNotes(iNotes);
+        INotesDb iNotesDb = new NotesDbServiceDb();
+        ConsumeDbNotes consumeDbNotes = new ConsumeDbNotes(iNotesDb);
+        IPresenceDb iPresenceDb = new PresenceDbServiceDb();
+        ConsumeDbPresence consumeDbPresence = new ConsumeDbPresence(iPresenceDb);
 
-        ClassSchServiceDbDb turmasCrud = new ClassSchServiceDbDb();
-        turmasCrud.criarTabelaTurmas();
-        Turmas.setTurmas(turmasCrud.listarTurmas());
-        for (Map.Entry<String, Turmas> entry : Turmas.getTurmas().entrySet()) {
+        consumeDbTeacher.createConsume();
+        Professor.setProfessorLista(consumeDbTeacher.listConsume());
+
+
+        consumeDbClassScho.createConsume();
+        Turmas.setTurmas(consumeDbClassScho.listConsume());
+        for (Map.Entry<String, ClassSchool> entry : consumeClassScho.getClassSco().entrySet()) {
             Turmas.getTurmasObservable().add(entry.getValue());
         }
 
-        IDBStudent serviceDBStudent = new StudentServiceDb();
-        ConsumerDbStudent consumerDbStudent = new ConsumerDbStudent(serviceDBStudent);
         consumerDbStudent.createConsume();
-        Alunos.setLista(alunosCrud.listarAlunos());
-        for (Map.Entry<String, Alunos> entry2 : Alunos.getLista().entrySet()) {
+        consumeStudent.consumeSet(consumerDbStudent.listConsumer());
+        for (Map.Entry<String, Student> entry2 : consumeStudent.consumeList().entrySet()) {
             Alunos.getListaObservable().add(entry2.getValue());
         }
 
-        NotesDbServiceDb notesServiceDb = new NotesDbServiceDb();
-        notesServiceDb.createTable();
-        Notas.setNotasPorAluno(notesServiceDb.listarNotas());
-        for (Map.Entry<String, Notas> entry3 : Notas.getNotasPorAluno().entrySet()) {
+        consumeDbNotes.createConsume();
+        Notas.setNotasPorAluno(consumeDbNotes.listConsume());
+        for (Map.Entry<String, Notes> entry3 : Notas.getNotasPorAluno().entrySet()) {
             Notas.getNotasObservable().add(entry3.getValue());
         }
 
         PresenceDbServiceDb presenceService = new PresenceDbServiceDb();
-        presenceService.criarTabelas();
-        ListaPresenca.setPresencas(presenceService.listarPresencas());
+        consumeDbPresence.createConsume();
+        ListaPresenca.setPresencas(consumeDbPresence.listConsume());
         launch(args);
     }
 }

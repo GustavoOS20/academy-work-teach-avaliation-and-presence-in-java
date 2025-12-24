@@ -5,16 +5,11 @@ import br.com.projetoa3.gui.fxmlloader.FxmlLoader;
 import br.com.projetoa3.modelo.Professor;
 import br.com.projetoa3.modelo.records.Teach;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
@@ -76,7 +71,7 @@ public class LoginControllers implements Initializable {
 
     public void AbrirLogin() throws IOException {
         FxmlLoader fxloader = new FxmlLoader();
-        fxloader.fxmlLogin();
+
 
     }
 }

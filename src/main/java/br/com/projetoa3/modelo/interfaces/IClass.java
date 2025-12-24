@@ -6,4 +6,5 @@ import java.util.Map;
 
 public interface IClass {
     void addClass(String numero, ClassSchool classSch);
+    Map<String, ClassSchool> getClassSco();
 }

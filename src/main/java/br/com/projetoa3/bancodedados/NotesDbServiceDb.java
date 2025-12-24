@@ -62,9 +62,9 @@ public class NotesDbServiceDb implements INotesDb {
         }
     }
 
-        @Override
-    public Map<Long, Notes> listNotes() {
-        Map<Long, Notes> notasMap = new HashMap<>();
+    @Override
+    public Map<String, Notes> listNotes() {
+        Map<String, Notes> notasMap = new HashMap<>();
         String sql = "SELECT * FROM notas";
 
         try (Connection conn = ConsumerAPIJBDC.conectar()){
@@ -78,8 +78,7 @@ public class NotesDbServiceDb implements INotesDb {
                             rs.getInt("A2"),
                             rs.getInt("A3")
                     );
-                    Long ra = rs.getLong("ra");
-                    notasMap.put(ra, notes);
+                    notasMap.put(rs.getString("ra"), notes);
                 }
             }
         } catch (SQLException e) {

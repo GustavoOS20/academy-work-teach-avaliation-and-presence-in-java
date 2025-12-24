@@ -16,6 +16,7 @@ public class Turmas implements IClass {
         Turmas.turmas = turmas;
     }
 
+    @Override
     public Map<String, ClassSchool> getClassSco() {
         return turmas;
     }

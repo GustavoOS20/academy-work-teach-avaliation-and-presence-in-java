@@ -12,8 +12,8 @@ import java.util.Map;
 public class StudentServiceDb implements IDBStudent {
     @Override
     public void createTable() {
-        String sql = "CREATE TABLE IF NOT EXISTS ALUNOS" +
-                "idA BIGINT AUTO_INCREMENT PRIMARY KEY," +
+        String sql = "CREATE TABLE IF NOT EXISTS alunos (" +
+                "id BIGINT AUTO_INCREMENT PRIMARY KEY," +
                 "RA VARCHAR(100)," +
                 "nome VARCHAR(100) NOT NULL," +
                 "turmaId VARCHAR(100)," +
@@ -29,7 +29,7 @@ public class StudentServiceDb implements IDBStudent {
                 System.err.println("Erro ao conectar ao banco de dados.");
             }
         } catch (SQLException e) {
-            System.err.println("Erro ao criar a tabela: " + e.getMessage());
+            System.err.println("Erro ao criar a tabela alunos: " + e.getMessage());
         }
     }
     @Override

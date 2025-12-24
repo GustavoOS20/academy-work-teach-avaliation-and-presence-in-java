@@ -1,6 +1,9 @@
 package br.com.projetoa3.bancodedados.consurmers;
 
 import br.com.projetoa3.bancodedados.interfacedb.ITeacherDb;
+import br.com.projetoa3.modelo.records.Teach;
+
+import java.util.Map;
 
 public class ConsumeDbTeacher {
     ITeacherDb serviceTeacher;
@@ -16,8 +19,8 @@ public class ConsumeDbTeacher {
         this.serviceTeacher.insert(ra, nome, email, senha);
     }
 
-    public void listConsume(){
-        this.serviceTeacher.listTeachers();
+    public Map<String, Teach> listConsume(){
+        return this.serviceTeacher.listTeachers();
     }
 
     public void deleteConsume(String ra){

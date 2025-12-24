@@ -1,23 +1,26 @@
 package br.com.projetoa3.gui.controllers;
 
 import br.com.projetoa3.bancodedados.PresenceDbServiceDb;
+import br.com.projetoa3.bancodedados.consurmers.ConsumeDbPresence;
+import br.com.projetoa3.bancodedados.interfacedb.IPresenceDb;
 import br.com.projetoa3.modelo.*;
+import br.com.projetoa3.modelo.consumersmodel.ConsumeNotes;
+import br.com.projetoa3.modelo.consumersmodel.ConsumeStudent;
+import br.com.projetoa3.modelo.interfaces.INotes;
+import br.com.projetoa3.modelo.interfaces.IStudent;
+import br.com.projetoa3.modelo.records.ClassSchool;
+import br.com.projetoa3.modelo.records.Notes;
+import br.com.projetoa3.modelo.records.Student;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.collections.ListChangeListener;
 
-import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.*;
@@ -49,10 +52,13 @@ public class TelaPrincipalController implements Initializable {
     @FXML
     private Label nomeL;
 
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        Turmas.getTurmasObservable().addListener((ListChangeListener<Turmas>) change -> {
+        IStudent iStudent = new Alunos();
+        ConsumeStudent consumeStudent = new ConsumeStudent(iStudent);
+        INotes iNotes = new Notas();
+        ConsumeNotes consumeNotes = new ConsumeNotes(iNotes);
+        Turmas.getTurmasObservable().addListener((ListChangeListener<ClassSchool>) change -> {
             mostrarTurmas();
         });
         listaNotasId.getItems().clear();
@@ -64,25 +70,19 @@ public class TelaPrincipalController implements Initializable {
             carregarPresencas(newDate);
         });
         carregarPresencas(LocalDate.now());
-        for (Notas nota : Notas.getNotasObservable()) {
+        for (Notes nota : Notas.getNotasObservable()) {
             listaNotas.add(nota.toString());
         }
 
-        for (Alunos aluno : Alunos.getListaObservable()) {
-            alunosFormatados.add(aluno.toString());
-        }
-
-        Alunos.getListaObservable().addListener((ListChangeListener<Alunos>) change -> {
+        Alunos.getListaObservable().addListener((ListChangeListener<Student>) change -> {
             alunosFormatados.clear();
-
-            for (Alunos aluno : Alunos.getListaObservable()) {
-                alunosFormatados.add(aluno.toString());
-            }
         });
-        listaAlunosId.setItems(alunosFormatados);
 
-        atualizarAluno();
-        Alunos.getListaObservable().addListener((ListChangeListener<Alunos>) change -> {
+        Alunos.getListaObservable().addListener((ListChangeListener<Student>) change2 -> {
+            filtrarPresencaPorProfessor();
+        });
+
+        Alunos.getListaObservable().addListener((ListChangeListener<Student>) change -> {
             atualizarAluno();
         });
 
@@ -94,70 +94,60 @@ public class TelaPrincipalController implements Initializable {
 
                 try {
                     listaNotasId.refresh();
-                    Long ra = Long.parseLong(raStr);
-                    for (Map.Entry<String, Alunos> entry : Alunos.getLista().entrySet()) {
-                        if (entry.getValue().getRa().equals(ra)) {
-                            String turma = entry.getValue().getTurma();
+                    long ra = Long.parseLong(raStr);
+                    for (Map.Entry<String, Student> entry : consumeStudent.consumeList().entrySet()) {
+                        if (entry.getValue().ra() == ra) {
+                            String turma = entry.getValue().turma();
 
-                            Notas nota = Notas.getNotaPorAluno(ra + "-" + turma);
+                            Notes nota = Notas.getNotaPorAluno(ra + "-" + turma);
                             if (nota != null) {
                                 listaNotasId.getItems().setAll(
-                                        "A1: " + nota.getNotaA1(),
-                                        "A2: " + nota.getNotaA2(),
-                                        "A3: " + nota.getNotaA3(),
-                                        "Soma: " + nota.getSomaNota(),
+                                        "A1: " + nota.notaA1(),
+                                        "A2: " + nota.notaA2(),
+                                        "A3: " + nota.notaA3(),
+                                        "Soma: " + nota.notaA1() + nota.notaA2() + nota.notaA3(),
                                         "Status: " + nota.getStatus()
                                 );
-                            } } else {
+                            }
+                        } else {
                             listaNotasId.getItems().setAll("Sem notas cadastradas");
                         }
-                        }
+                    }
 
                 } catch (NumberFormatException e) {
                     listaNotasId.getItems().setAll("Erro ao ler RA");
                 }
             }
         });
-        Alunos.getListaObservable().addListener((ListChangeListener<Alunos>) change -> {
-            alunosFormatados.clear();
-            for (Alunos aluno : Alunos.getListaObservable()) {
-                alunosFormatados.add(aluno.toString());
-            }
-
-            Alunos.getListaObservable().addListener((ListChangeListener<Alunos>) change2 -> {
-                filtrarPresencaPorProfessor();
-            });
-
-            filtrarPresencaPorProfessor();
-            carregarPresencas(calendario.getValue());
-        });
+        carregarPresencas(calendario.getValue());
     }
 
     private void carregarPresencas(LocalDate data) {
+        ObservableList<String> presencasFiltradas = FXCollections.observableArrayList();
+        IPresenceDb iPresenceDb = new PresenceDbServiceDb();
+        ConsumeDbPresence consumeDbPresence = new ConsumeDbPresence(iPresenceDb);
         listaDePresenca.refresh();
         Map<Long, BooleanProperty> presencaData = ListaPresenca.getPresencas()
                 .computeIfAbsent(data, d -> new HashMap<>());
         Alunos.getListaObservable().forEach(aluno -> {
-            BooleanProperty prop = presencaData.computeIfAbsent(aluno.getRa(), ra -> new SimpleBooleanProperty(false));
+            BooleanProperty prop = presencaData.computeIfAbsent(aluno.ra(), ra -> new SimpleBooleanProperty(false));
             prop.addListener((obs, oldVal, newVal) -> {
-                PresenceDbServiceDb crud = new PresenceDbServiceDb();
-                crud.atualizarPresenca(aluno.getRa(), data, newVal);
+                consumeDbPresence.insertPresence(aluno.ra(), data, newVal);
             });
         });
 
-    PresenceDbServiceDb criador = new PresenceDbServiceDb();
         Alunos.getListaObservable().forEach(aluno -> {
-                    criador.criarTabelas();
-                    for (Map.Entry<Long, BooleanProperty> entry : presencaData.entrySet()) {
-                        Long ra = entry.getKey();
-                        BooleanProperty presente = entry.getValue();
-                        criador.inserirPresenca(ra, data, presente.get());
-                    }
-                });
-        ObservableList<String> presencasFiltradas = FXCollections.observableArrayList();
-        for (Alunos aluno : Alunos.getListaObservable()) {
-            if (aluno.getProfessor().equals(Professor.getRaLogado())) {
-                presencasFiltradas.add(aluno.getNome() + " | RA: " + aluno.getRa()+ " | Turma: " + aluno.getTurma());
+            consumeDbPresence.createConsume();
+            for (Map.Entry<Long, BooleanProperty> entry : presencaData.entrySet()) {
+                Long ra = entry.getKey();
+                BooleanProperty presente = entry.getValue();
+                consumeDbPresence.insertPresence(ra, data, presente.get());
+            }
+        });
+
+        for (Student aluno : Alunos.getListaObservable()) {
+            if (aluno.professor().equals(Professor.getRaLogado())) {
+                presencasFiltradas.add(aluno.nome() + " | RA: " + aluno.ra() + " | Turma: " + aluno.turma());
             }
         }
         listaDePresenca.setItems(presencasFiltradas);
@@ -184,61 +174,10 @@ public class TelaPrincipalController implements Initializable {
     }
 
     @FXML
-    private void abrirTelaCadastro() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/telaCadastro.fxml"));
-        Parent root = loader.load();
-        TelaCadastroController controller = loader.getController();
-        Stage stage = new Stage();
-        stage.setTitle("Cadastro de Aluno");
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-        stage.setScene(new Scene(root, 800, 600));
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.initOwner(mainStage);
-        stage.setResizable(false);
-        listaDePresenca.refresh();
-        stage.showAndWait();
-
-    }
-
-    @FXML
-    private void abrirTelaNotas() throws IOException {
-        listaNotasId.getItems().clear();
-        listaAlunosId.getSelectionModel().clearSelection();
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/telaCadastrarNotaSeparado.fxml"));
-        Parent root = loader.load();
-        TelaCadastrarNotasController controller = loader.getController();
-        Stage stage = new Stage();
-        stage.setTitle("Cadastro de Notas");
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-        stage.setScene(new Scene(root, 800, 600));
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.initOwner(mainStage);
-        stage.setResizable(false);
-        listaNotasId.refresh();
-        stage.showAndWait();
-
-    }
-
-    @FXML
-    public void abrirTelaRemoverAluno() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/telaRemoverAluno.fxml"));
-        Parent root = loader.load();
-        RemoverAlunoControllers controller = loader.getController();
-        Stage stage = new Stage();
-        stage.setTitle("Remover Aluno");
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-        stage.setScene(new Scene(root, 600, 400));
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.initOwner(mainStage);
-        stage.setResizable(false);
-        stage.showAndWait();
-    }
-
-    @FXML
     private void filtrarAlunosPorTurma(String turma) {
         ObservableList<String> alunosFiltrados = FXCollections.observableArrayList();
-        for (Alunos aluno : Alunos.getListaObservable()) {
-            if (aluno.getTurma().equals(turma)) {
+        for (Student aluno : Alunos.getListaObservable()) {
+            if (aluno.turma().equals(turma)) {
                 alunosFiltrados.add(aluno.toString());
             }
         }
@@ -258,7 +197,7 @@ public class TelaPrincipalController implements Initializable {
         trocarTurmaMenu.getItems().add(todasTurmas);
 
         List<String> turmas = new ArrayList<>(Turmas.getTurmasObservable().stream()
-                .map(Turmas::getTurma)
+                .map(ClassSchool::nome)
                 .distinct()
                 .toList());
 
@@ -268,43 +207,10 @@ public class TelaPrincipalController implements Initializable {
             trocarTurmaMenu.getItems().add(item);
         }
     }
-
-    @FXML
-    public void adicionarTurma() throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/AdicionarTurma.fxml"));
-        Parent root = loader.load();
-        TelaAdicionarTurmaController controller = loader.getController();
-        Stage stage = new Stage();
-        stage.setTitle("Adicionar Turma");
-        stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-        stage.setScene(new Scene(root, 600, 380));
-        stage.initModality(Modality.APPLICATION_MODAL);
-        stage.initOwner(mainStage);
-        stage.setResizable(false);
-        stage.showAndWait();
-    }
-
-    public void sairDaConta(){
-        try {
-            Stage stage = (Stage) RAL.getScene().getWindow();
-            stage.close();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/login.fxml"));
-            Parent root = loader.load();
-            Stage loginStage = new Stage();
-            loginStage.setTitle("Login");
-            loginStage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
-            loginStage.setScene(new Scene(root, 460, 510));
-            loginStage.setResizable(false);
-            loginStage.show();
-            listaAlunosId.getItems().clear();
-        } catch (IOException e) {
-            e.printStackTrace();
-    }
-}
     public void atualizarAluno(){
         ObservableList<String> alunosFiltPorProfessor = FXCollections.observableArrayList();
-        for (Alunos aluno : Alunos.getListaObservable()) {
-            if (aluno.getProfessor().equals(Professor.getRaLogado())) {
+        for (Student aluno : Alunos.getListaObservable()) {
+            if (aluno.professor().equals(Professor.getRaLogado())) {
                 alunosFiltPorProfessor.add(aluno.toString());
             }
         }
@@ -313,9 +219,9 @@ public class TelaPrincipalController implements Initializable {
 
     private void filtrarPresencaPorProfessor() {
         ObservableList<String> presencasFiltradas = FXCollections.observableArrayList();
-        for (Alunos aluno : Alunos.getListaObservable()) {
-            if (aluno.getProfessor().equals(Professor.getRaLogado())) {
-                presencasFiltradas.add(aluno.getNome() + " | RA: " + aluno.getRa());
+        for (Student aluno : Alunos.getListaObservable()) {
+            if (aluno.professor().equals(Professor.getRaLogado())) {
+                presencasFiltradas.add(aluno.nome() + " | RA: " + aluno.ra());
             }
         }
         listaDePresenca.setItems(presencasFiltradas);
