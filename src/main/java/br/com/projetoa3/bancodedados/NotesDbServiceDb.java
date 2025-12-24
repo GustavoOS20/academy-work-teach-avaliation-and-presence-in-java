@@ -47,7 +47,7 @@ public class NotesDbServiceDb implements INotesDb {
             assert conn != null;
              try (PreparedStatement psInsere = conn.prepareStatement(inserirNota)) {
 
-                 psInsere.setLong(1, ra);
+                 psInsere.setString(1, ra);
                  psInsere.setInt(2, A1);
                  psInsere.setInt(3, A2);
                  psInsere.setInt(4, A3);
