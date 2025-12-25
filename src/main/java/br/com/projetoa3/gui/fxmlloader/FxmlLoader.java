@@ -18,18 +18,19 @@ public class FxmlLoader {
 
     @FXML
     public void fxmlLoaderPrincipal(Button botaoEntrar) throws IOException {
+        Stage currentStage = (Stage) botaoEntrar.getScene().getWindow();
+        currentStage.close();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/telaPrincipal.fxml"));
         Parent root = loader.load();
+        TelaPrincipalController telaPrincipalController = loader.getController();
         Stage stage = new Stage();
         stage.setTitle("Lista de notas e Presenças");
         stage.getIcons().add(new Image(getClass().getResourceAsStream("/foto/Icone-removebg-preview.png")));
         stage.setScene(new Scene(root, 1280, 720));
         stage.initModality(Modality.APPLICATION_MODAL);
-        stage.show();
-        Stage currentStage = (Stage) botaoEntrar.getScene().getWindow();
-        currentStage.close();
-    }
-
+        stage.showAndWait();
+        currentStage.show();
+}
     @FXML
     public void fxmlSingUp(Button botaoCadastrar) throws IOException {
         Stage currentStage = (Stage) botaoCadastrar.getScene().getWindow();

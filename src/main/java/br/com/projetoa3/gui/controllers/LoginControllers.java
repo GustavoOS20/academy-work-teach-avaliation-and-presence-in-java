@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.event.ActionEvent;
 
 import java.io.IOException;
 import java.net.URL;
@@ -29,39 +30,41 @@ public class LoginControllers implements Initializable {
     @FXML
     private Button botaoCadastrar;
 
+    @FXML
     @Override
     public void initialize(URL location, ResourceBundle resources){
         botaoEntrar.setOnAction(event -> {
-            VerificarLogin();
+            AlertsClass alerts = new AlertsClass();
+            if(VerificarLogin()) {
+                alerts.alertInformation("Login", "Login feito com sucesso", "login de usuários");
+                try {
+                    Login(event);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }else {
+                alerts.alertInformation("Login", "Usuário ou senha incorretos.", "Login de usuários");
+            }
         });
     }
 
-    public void VerificarLogin() {
+    public boolean VerificarLogin() {
         AlertsClass alerts = new AlertsClass();
-         boolean loginValido = false;
+        boolean loginValido = false;
 
         for (Teach teach : Professor.getProfessorLista().values()) {
             if (teach.email().equals(LoginUsuario.getText()) && teach.senha().equals(LoginSenha.getText())) {
-                loginValido= true;
-                Professor.setNomeLogado(teach.nome()) ;
+                loginValido = true;
+                Professor.setNomeLogado(teach.nome());
                 Professor.setRaLogado(teach.ra());
                 break;
             }
         }
-
-        if (loginValido) {
-            try {
-                FxmlLoader fxloader = new FxmlLoader();
-                fxloader.fxmlLoaderPrincipal(botaoEntrar);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } else if(LoginUsuario.getText().isEmpty() || LoginSenha.getText().isEmpty()){
+        if (LoginUsuario.getText().isEmpty() || LoginSenha.getText().isEmpty()) {
             alerts.alertInformation("Login", "Por favor, preencha todos os campos.", "Login de usuários");
-        } else {
-            alerts.alertInformation("Login", "Usuário ou senha incorretos.", "Login de usuários");
+            throw new RuntimeException("preencha todos os campos");
         }
-
+        return loginValido;
     }
 
     public void AbrirCadastrar() throws IOException {
@@ -69,9 +72,10 @@ public class LoginControllers implements Initializable {
         fxloader.fxmlSingUp(botaoCadastrar);
     }
 
-    public void AbrirLogin() throws IOException {
+    @FXML
+    public void Login(ActionEvent event) throws IOException {
+        System.out.println("passou aqui");
         FxmlLoader fxloader = new FxmlLoader();
-
-
+        fxloader.fxmlLoaderPrincipal(botaoEntrar);
     }
 }

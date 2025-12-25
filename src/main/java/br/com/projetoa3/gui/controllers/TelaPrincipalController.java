@@ -3,6 +3,7 @@ package br.com.projetoa3.gui.controllers;
 import br.com.projetoa3.bancodedados.PresenceDbServiceDb;
 import br.com.projetoa3.bancodedados.consurmers.ConsumeDbPresence;
 import br.com.projetoa3.bancodedados.interfacedb.IPresenceDb;
+import br.com.projetoa3.gui.fxmlloader.FxmlLoader;
 import br.com.projetoa3.modelo.*;
 import br.com.projetoa3.modelo.consumersmodel.ConsumeNotes;
 import br.com.projetoa3.modelo.consumersmodel.ConsumeStudent;
@@ -21,6 +22,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 import javafx.collections.ListChangeListener;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.*;
@@ -226,6 +228,41 @@ public class TelaPrincipalController implements Initializable {
         }
         listaDePresenca.setItems(presencasFiltradas);
         listaDePresenca.refresh();
+    }
+
+    @FXML
+    public void abrirTelaCadastro() throws IOException {
+        FxmlLoader fxmlLoader = new FxmlLoader();
+        Stage stage = new Stage();
+        fxmlLoader.abrirTelaCadastro(stage,listaDePresenca);
+    }
+
+    @FXML
+    public void abrirTelaNotas() throws IOException {
+        FxmlLoader fxmlLoader = new FxmlLoader();
+        Stage stage = new Stage();
+        fxmlLoader.abrirTelaNotas(listaNotasId, listaAlunosId, stage);
+    }
+
+    @FXML
+    public void abrirTelaRemoverAluno() throws IOException {
+        FxmlLoader fxmlLoader = new FxmlLoader();
+        Stage stage = new Stage();
+        fxmlLoader.abrirTelaRemoverAluno(stage);
+    }
+
+    @FXML
+    public void adicionarTurma() throws IOException {
+        FxmlLoader fxmlLoader = new FxmlLoader();
+        Stage stage = new Stage();
+        fxmlLoader.adicionarTurma(stage);
+    }
+
+    @FXML
+    public void sairDaConta() throws IOException {
+        FxmlLoader fxmlLoader = new FxmlLoader();
+        Stage stage = new Stage();
+        fxmlLoader.sairDaConta(RAL, listaAlunosId);
     }
 }
 
