@@ -10,7 +10,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.event.ActionEvent;
 
 import java.io.IOException;
 import java.net.URL;
@@ -38,7 +37,7 @@ public class LoginControllers implements Initializable {
             if(VerificarLogin()) {
                 alerts.alertInformation("Login", "Login feito com sucesso", "login de usuários");
                 try {
-                    Login(event);
+                    Login();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -73,7 +72,7 @@ public class LoginControllers implements Initializable {
     }
 
     @FXML
-    public void Login(ActionEvent event) throws IOException {
+    public void Login() throws IOException {
         System.out.println("passou aqui");
         FxmlLoader fxloader = new FxmlLoader();
         fxloader.fxmlLoaderPrincipal(botaoEntrar);

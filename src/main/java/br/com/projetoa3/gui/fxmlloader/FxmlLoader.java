@@ -1,18 +1,22 @@
 package br.com.projetoa3.gui.fxmlloader;
 
 import br.com.projetoa3.gui.controllers.*;
+import br.com.projetoa3.gui.interfacescreenprincipal.ClassVerification;
+import br.com.projetoa3.modelo.Turmas;
+import br.com.projetoa3.modelo.records.ClassSchool;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FxmlLoader {
 
@@ -139,6 +143,28 @@ public class FxmlLoader {
             listaAlunosId.getItems().clear();
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public void mostrarTurmas(Menu trocarTurmaMenu, ListView<String> listaAlunosId, ListView<String> listaDePresenca, ObservableList<String> alunosFormatados) {
+        trocarTurmaMenu.getItems().clear();
+
+        MenuItem todasTurmas = new MenuItem("Todas as turmas");
+        todasTurmas.setOnAction(event -> {
+            listaAlunosId.setItems(alunosFormatados);
+            listaDePresenca.setItems(alunosFormatados);
+        });
+        trocarTurmaMenu.getItems().add(todasTurmas);
+
+        List<String> turmas = new ArrayList<>(Turmas.getTurmasObservable().stream()
+                .map(ClassSchool::nome)
+                .distinct()
+                .toList());
+
+        for (String turma : turmas) {
+            MenuItem item = new MenuItem(turma);
+            item.setOnAction(event -> ClassVerification.filtrarAlunosPorTurma(turma, listaAlunosId, listaDePresenca));
+            trocarTurmaMenu.getItems().add(item);
         }
     }
 }
