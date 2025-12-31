@@ -13,12 +13,9 @@ public class NotesVerification {
         listaAlunosId.getSelectionModel().selectedItemProperty().addListener((obs, oldValue, newValue) -> {
             listaNotasId.getItems().clear();
             if (newValue != null) {
-                String[] partes = newValue.split("\\|");
-                String raStr = partes[1].replace("RA:", "").trim();
-
                 try {
                     listaNotasId.refresh();
-                    long ra = Long.parseLong(raStr);
+                    long ra = Long.parseLong(newValue);
                     for (Map.Entry<String, Student> entry : consumeStudent.consumeList().entrySet()) {
                         if (entry.getValue().ra() == ra) {
                             String turma = entry.getValue().turma();

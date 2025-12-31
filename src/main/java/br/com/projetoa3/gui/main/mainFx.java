@@ -26,7 +26,7 @@ public class mainFx extends Application {
         loader.fxmlLogin(primaryStage);
     }
 
-    public static void main(String[] args) {
+     public static void main(String[] args) {
         ITeacherDb iTeacherDb = new TeacherServiceDb();
         ConsumeDbTeacher consumeDbTeacher = new ConsumeDbTeacher(iTeacherDb);
         IClassSchoolDb iClassSchoolDb = new ClassSchServiceDbDb();
@@ -66,7 +66,6 @@ public class mainFx extends Application {
             Notas.getNotasObservable().add(entry3.getValue());
         }
 
-        PresenceDbServiceDb presenceService = new PresenceDbServiceDb();
         consumeDbPresence.createConsume();
         ListaPresenca.setPresencas(consumeDbPresence.listConsume());
         launch(args);

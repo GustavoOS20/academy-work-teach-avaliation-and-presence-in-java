@@ -34,7 +34,8 @@ public class FxmlLoader {
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.showAndWait();
         currentStage.show();
-}
+    }
+
     @FXML
     public void fxmlSingUp(Button botaoCadastrar) throws IOException {
         Stage currentStage = (Stage) botaoCadastrar.getScene().getWindow();
@@ -55,7 +56,7 @@ public class FxmlLoader {
     @FXML
     public void fxmlLogin(Stage primaryStage) throws IOException {
         Parent root = FXMLLoader.load(getClass().getResource("/fxml/login.fxml"));
-        Scene scene = new Scene(root,460 , 510);
+        Scene scene = new Scene(root, 460, 510);
         primaryStage.setResizable(false);
         primaryStage.setTitle("Projeto A3 - Lista de Notas e Presenças");
         primaryStage.setScene(scene);
@@ -150,10 +151,7 @@ public class FxmlLoader {
         trocarTurmaMenu.getItems().clear();
 
         MenuItem todasTurmas = new MenuItem("Todas as turmas");
-        todasTurmas.setOnAction(event -> {
-            listaAlunosId.setItems(alunosFormatados);
-            listaDePresenca.setItems(alunosFormatados);
-        });
+
         trocarTurmaMenu.getItems().add(todasTurmas);
 
         List<String> turmas = new ArrayList<>(Turmas.getTurmasObservable().stream()
@@ -163,8 +161,12 @@ public class FxmlLoader {
 
         for (String turma : turmas) {
             MenuItem item = new MenuItem(turma);
-            item.setOnAction(event -> ClassVerification.filtrarAlunosPorTurma(turma, listaAlunosId, listaDePresenca));
+            item.setOnAction(event -> ClassVerification.filtrarAlunosPorTurma(turma, listaAlunosId, listaDePresenca, trocarTurmaMenu));
             trocarTurmaMenu.getItems().add(item);
+            todasTurmas.setOnAction(event -> {
+                ClassVerification.todosAlunos(trocarTurmaMenu, listaAlunosId, listaDePresenca);
+            });
         }
+
     }
 }

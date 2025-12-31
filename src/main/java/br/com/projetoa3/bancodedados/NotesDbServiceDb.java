@@ -119,30 +119,34 @@ public void buscarNotasPorId(int idNota) {
         System.err.println("Erro ao buscar nota por ID: " + e.getMessage());
     }
 }
+*/
+    @Override
+    public void updateNotes(String idNota, int novaA1, int novaA2, int novaA3, int soma, String status)  {
+    String sql = "UPDATE notas SET A1 = ?, A2 = ?, A3 = ?, soma = ?, status = ? WHERE id = ?";
 
-public void atualizarNotas(int idNota, double novaA1, double novaA2, double novaA3) {
-    String sql = "UPDATE notas SET A1 = ?, A2 = ?, A3 = ? WHERE id = ?";
+    try (Connection conn = ConsumerAPIJBDC.conectar()){
+        assert conn != null;
+        try(PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-    try (Connection conn = DriverManager.getConnection(URL, USUARIO, SENHA);
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
+             stmt.setDouble(1, novaA1);
+             stmt.setDouble(2, novaA2);
+             stmt.setDouble(3, novaA3);
+             stmt.setInt(4, soma);
+             stmt.setString(5, status);
+             stmt.setString(4, idNota);
 
-        stmt.setDouble(1, novaA1);
-        stmt.setDouble(2, novaA2);
-        stmt.setDouble(3, novaA3);
-        stmt.setInt(4, idNota);
-
-        int afetados = stmt.executeUpdate();
-        if (afetados > 0) {
-            System.out.println("Notas atualizadas com sucesso.");
-        } else {
-            System.out.println("Nota com ID " + idNota + " não encontrada.");
-        }
-
+             int afetados = stmt.executeUpdate();
+             if (afetados > 0) {
+                 System.out.println("Notas atualizadas com sucesso.");
+             } else {
+                 System.out.println("Nota com ID " + idNota + " não encontrada.");
+             }
+         }
     } catch (SQLException e) {
-        System.err.println("Erro ao atualizar notas: " + e.getMessage());
+        System.err.println("Erro ao conectar atualizar notas: " + e.getMessage());
     }
 }
-*/
+
 @Override
 public void delete(String ra) {
     String sql = "DELETE FROM notas WHERE ra = ?";

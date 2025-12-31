@@ -44,6 +44,7 @@ public class TelaCadastroController implements Initializable {
 
     @FXML
     private void confirmarCadastro() {
+        String turma;
         IStudent iStudent = new Alunos();
         ConsumeStudent consumeStudent = new ConsumeStudent(iStudent);
         IDBStudent idbStudent = new StudentServiceDb();
@@ -61,11 +62,12 @@ public class TelaCadastroController implements Initializable {
 
         for (Map.Entry<String, Student> entry3 : consumeStudent.consumeList().entrySet()) {
             consumerDbStudent.insertConsume(entry3.getValue().ra(), entry3.getValue().nome(), entry3.getValue().turma(), entry3.getValue().professor());
+            turma = entry3.getValue().turma();
+            alert.alertInformation(
+                    "Aluno cadastrado",
+                    "Clique em OK para continuar.",
+                    "Aluno cadastrado com sucesso!\\nNome: " + cadastrarNomeId.getText() + "\nRA: " + cadastrarRAId1.getText() + "\nTurma: " + turma);
         }
-        alert.alertInformation(
-                "Aluno cadastrado",
-                "Clique em OK para continuar.",
-                "Aluno cadastrado com sucesso!\\nNome: " + cadastrarNomeId.getText() + "\nRA: " + cadastrarRAId1.getText() + "\nTurma: " + comboBoxTurma.getValue());
         cadastrarNomeId.clear();
         cadastrarRAId1.clear();
     }

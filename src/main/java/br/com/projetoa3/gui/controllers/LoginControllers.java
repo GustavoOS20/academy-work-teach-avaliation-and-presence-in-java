@@ -73,7 +73,6 @@ public class LoginControllers implements Initializable {
 
     @FXML
     public void Login() throws IOException {
-        System.out.println("passou aqui");
         FxmlLoader fxloader = new FxmlLoader();
         fxloader.fxmlLoaderPrincipal(botaoEntrar);
     }

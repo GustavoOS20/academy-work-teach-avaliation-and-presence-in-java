@@ -2,6 +2,7 @@ package br.com.projetoa3.bancodedados;
 
 import br.com.projetoa3.bancodedados.consurmers.ConsumerAPIJBDC;
 import br.com.projetoa3.bancodedados.interfacedb.IPresenceDb;
+import br.com.projetoa3.modelo.records.PresenceList;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
@@ -24,7 +25,9 @@ public class PresenceDbServiceDb implements IPresenceDb {
                     idP BIGINT AUTO_INCREMENT PRIMARY KEY,
                     id INT,
                     data DATE NOT NULL,
-                    presente BOOLEAN NOT NULL
+                    presente BOOLEAN NOT NULL,
+                    turma VARCHAR(255) NOT NULL,
+                    professor VARCHAR(255) NOT NULL
                 );
                 """;
 
@@ -39,8 +42,8 @@ public class PresenceDbServiceDb implements IPresenceDb {
     }
 
     @Override
-    public void insertPresence(Long id, LocalDate data, boolean presente) {
-        String sql = "INSERT INTO presenca (id, data, presente) VALUES (?, ?, ?)";
+    public void insertPresence(Long id, LocalDate data, boolean presente, String turma, String professor) {
+        String sql = "INSERT INTO presenca (id, data, presente, turma, professor) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection conexao = ConsumerAPIJBDC.conectar()){
                 assert conexao != null;
@@ -49,6 +52,8 @@ public class PresenceDbServiceDb implements IPresenceDb {
                 pstmt.setLong(1, id);
                 pstmt.setDate(2, Date.valueOf(data));
                 pstmt.setBoolean(3, presente);
+                pstmt.setString(4, turma);
+                pstmt.setString(5, professor);
 
                 pstmt.executeUpdate();
                 System.out.println("Presença inserida com sucesso!");
@@ -59,8 +64,8 @@ public class PresenceDbServiceDb implements IPresenceDb {
         }
     }
     @Override
-    public Map<LocalDate, Map<Long, BooleanProperty>> listPresence() {
-        Map<LocalDate, Map<Long, BooleanProperty>>presencas = new HashMap<>();
+    public Map<LocalDate, Map<Long, PresenceList>> listPresence() {
+        Map<LocalDate, Map<Long, PresenceList>> presencas = new HashMap<>();
         String sql = "SELECT * FROM presenca";
 
         try (Connection conexao = ConsumerAPIJBDC.conectar()){
@@ -71,8 +76,11 @@ public class PresenceDbServiceDb implements IPresenceDb {
                         while (rs.next()) {
                             LocalDate data = rs.getDate("data").toLocalDate();
                             Long id = rs.getLong("id");
+                            String turma = rs.getString("turma");
+                            String professor = rs.getString("professor");
                             rs.getBoolean("presente");
-                            presencas.computeIfAbsent(data, k -> new HashMap<>()).put(id, new SimpleBooleanProperty(rs.getBoolean("presente")));
+                            PresenceList presenceList = new PresenceList(new SimpleBooleanProperty(rs.getBoolean("presente")), turma, professor);
+                            presencas.computeIfAbsent(data, k -> new HashMap<>()).put(id, presenceList);
                         }
                     }
             }
@@ -97,8 +105,8 @@ public class PresenceDbServiceDb implements IPresenceDb {
     }
 
     @Override
-    public void updatePresence(Long id, LocalDate data, boolean presente) {
-        String sql = "UPDATE presenca SET presente = ? WHERE id = ? AND data = ?";
+    public void updatePresence(Long id, LocalDate data, boolean presente, String professor) {
+        String sql = "UPDATE presenca SET presente = ? WHERE id = ? AND data = ? AND professor = ?";
 
         try (Connection conexao = ConsumerAPIJBDC.conectar()){
             assert conexao != null;
@@ -107,6 +115,7 @@ public class PresenceDbServiceDb implements IPresenceDb {
                  pstmt.setBoolean(1, presente);
                  pstmt.setLong(2, id);
                  pstmt.setDate(3, Date.valueOf(data));
+                 pstmt.setString(4, professor);
 
                  int linhasAfetadas = pstmt.executeUpdate();
                  if (linhasAfetadas > 0) {

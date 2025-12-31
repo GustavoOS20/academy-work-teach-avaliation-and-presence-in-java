@@ -14,7 +14,7 @@ public class TeacherVerification {
         ObservableList<String> presencasFiltradas = FXCollections.observableArrayList();
         for (Student aluno : Alunos.getListaObservable()) {
             if (aluno.professor().equals(Professor.getRaLogado())) {
-                presencasFiltradas.add(aluno.nome() + " | RA: " + aluno.ra());
+                presencasFiltradas.add(aluno.nome() + " | RA: " + aluno.ra() + " | Turma: " + aluno.turma());
             }
         }
         listaDePresenca.setItems(presencasFiltradas);

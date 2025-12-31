@@ -4,25 +4,30 @@ import br.com.projetoa3.gui.fxmlloader.FxmlLoader;
 import br.com.projetoa3.gui.interfacescreenprincipal.NotesVerification;
 import br.com.projetoa3.gui.interfacescreenprincipal.PresenceListVerification;
 import br.com.projetoa3.gui.interfacescreenprincipal.StudentVerification;
-import br.com.projetoa3.gui.interfacescreenprincipal.TeacherVerification;
-import br.com.projetoa3.modelo.*;
+import br.com.projetoa3.modelo.Alunos;
+import br.com.projetoa3.modelo.Notas;
+import br.com.projetoa3.modelo.Professor;
+import br.com.projetoa3.modelo.Turmas;
 import br.com.projetoa3.modelo.consumersmodel.ConsumeStudent;
 import br.com.projetoa3.modelo.interfaces.IStudent;
 import br.com.projetoa3.modelo.records.ClassSchool;
 import br.com.projetoa3.modelo.records.Notes;
 import br.com.projetoa3.modelo.records.Student;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.*;
+import javafx.scene.control.DatePicker;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.Menu;
 import javafx.stage.Stage;
-import javafx.collections.ListChangeListener;
 
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ResourceBundle;
 
 public class TelaPrincipalController implements Initializable {
     private static final ObservableList<String> alunosFormatados = FXCollections.observableArrayList();
@@ -57,7 +62,13 @@ public class TelaPrincipalController implements Initializable {
         nomeL.setText("Professor: " + Professor.getNomeLogado());
         RAL.setText("RA: " + Professor.getRaLogado());
         calendario.setValue(LocalDate.now());
-        listaAlunosId.setItems(alunosFormatados);
+        Alunos.getListaObservable().addListener((ListChangeListener<Student>) change -> {
+            alunosFormatados.clear();
+            PresenceListVerification.carregarPresencas(calendario.getValue(), listaDePresenca);
+            StudentVerification.atualizarAluno(listaAlunosId);
+        });
+        alunosFormatados.clear();
+        StudentVerification.atualizarAluno(listaAlunosId);
         NotesVerification.notesVer(listaAlunosId, listaNotasId, consumeStudent);
         Turmas.getTurmasObservable().addListener((ListChangeListener<ClassSchool>) change -> {
             mostrarTurmas();
@@ -69,12 +80,6 @@ public class TelaPrincipalController implements Initializable {
         for (Notes nota : Notas.getNotasObservable()) {
             listaNotas.add(nota.toString());
         }
-        Alunos.getListaObservable().addListener((ListChangeListener<Student>) change -> {
-            alunosFormatados.clear();
-            TeacherVerification.filtrarPresencaPorProfessor(listaDePresenca);
-            StudentVerification.atualizarAluno(listaAlunosId);
-        });
-
         PresenceListVerification.carregarPresencas(calendario.getValue(), listaDePresenca);
     }
 

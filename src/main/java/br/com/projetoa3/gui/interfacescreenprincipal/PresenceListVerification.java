@@ -9,6 +9,7 @@ import br.com.projetoa3.modelo.Notas;
 import br.com.projetoa3.modelo.Professor;
 import br.com.projetoa3.modelo.consumersmodel.ConsumeStudent;
 import br.com.projetoa3.modelo.records.Notes;
+import br.com.projetoa3.modelo.records.PresenceList;
 import br.com.projetoa3.modelo.records.Student;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -29,22 +30,21 @@ public class PresenceListVerification {
         IPresenceDb iPresenceDb = new PresenceDbServiceDb();
         ConsumeDbPresence consumeDbPresence = new ConsumeDbPresence(iPresenceDb);
         listaDePresenca.refresh();
-        Map<Long, BooleanProperty> presencaData = ListaPresenca.getPresencas()
+        Map<Long, PresenceList> presencaData = ListaPresenca.getPresencas()
                 .computeIfAbsent(data, d -> new HashMap<>());
         Alunos.getListaObservable().forEach(aluno -> {
-            BooleanProperty prop = presencaData.computeIfAbsent(aluno.ra(), ra -> new SimpleBooleanProperty(false));
+            PresenceList presenceList = new PresenceList(new SimpleBooleanProperty(false), aluno.turma(), aluno.professor());
+            BooleanProperty prop = presencaData.computeIfAbsent(aluno.ra(), ra -> presenceList).presenca();
             prop.addListener((obs, oldVal, newVal) -> {
-                consumeDbPresence.insertPresence(aluno.ra(), data, newVal);
+                for(Map.Entry<LocalDate, Map<Long, PresenceList>> entry : consumeDbPresence.listConsume().entrySet()){
+                    PresenceList pList = new PresenceList(presenceList.presenca(), aluno.turma(), aluno.professor());
+                    if(entry.getValue().containsValue(pList)){
+                        consumeDbPresence.updatePresence(aluno.ra(), data, newVal, pList.RaLogado());
+                    }else{
+                        consumeDbPresence.insertPresence(aluno.ra(), data, newVal, pList.idClass(), pList.RaLogado());
+                    }
+                }
             });
-        });
-
-        Alunos.getListaObservable().forEach(aluno -> {
-            consumeDbPresence.createConsume();
-            for (Map.Entry<Long, BooleanProperty> entry : presencaData.entrySet()) {
-                Long ra = entry.getKey();
-                BooleanProperty presente = entry.getValue();
-                consumeDbPresence.insertPresence(ra, data, presente.get());
-            }
         });
 
         for (Student aluno : Alunos.getListaObservable()) {
@@ -63,13 +63,17 @@ public class PresenceListVerification {
                 if (empty || item == null) {
                     setGraphic(null);
                 } else {
-                    checkBox.setText(item);
-                    String[] partes = item.split("\\|");
-                    String raStr = partes[1].replace("RA:", "").trim();
-                    Long ra = Long.parseLong(raStr);
-                    checkBox.selectedProperty().unbind();
-                    checkBox.selectedProperty().bindBidirectional(presencaData.get(ra));
-                    setGraphic(checkBox);
+                    for(Map.Entry<Long, PresenceList> entry : presencaData.entrySet()) {
+                        checkBox.setText(item);
+                        PresenceList presenceList = entry.getValue();
+                        String[] partes = item.split("\\|");
+                        String raStr = partes[1].replace("RA:", "").trim();
+                        Long ra = Long.parseLong(raStr);
+                        checkBox.selectedProperty().unbind();
+                        checkBox.selectedProperty().bindBidirectional(presencaData.get(ra).presenca());
+                        setGraphic(checkBox);
+                    }
+
                 }
             }
         });

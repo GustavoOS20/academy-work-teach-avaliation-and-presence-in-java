@@ -19,14 +19,13 @@ public class ClassSchServiceDbDb implements IClassSchoolDb {
             );
         """;
 
-            try (Connection conn = ConsumerAPIJBDC.conectar()){
-                if(conn != null){
-                    try (Statement stmt = conn.createStatement()) {
-                        stmt.execute(sql);
-                        System.out.println("Tabela 'turmas' criada com sucesso.");
+        try (Connection conn = ConsumerAPIJBDC.conectar()) {
+            if (conn != null) {
+                try (Statement stmt = conn.createStatement()) {
+                    stmt.execute(sql);
+                    System.out.println("Tabela 'turmas' criada com sucesso.");
                 }
             }
-            System.out.println("Tabela 'turmas' criada com sucesso.");
 
         } catch (SQLException e) {
             System.err.println("Erro ao criar a tabela: " + e.getMessage());
@@ -34,20 +33,20 @@ public class ClassSchServiceDbDb implements IClassSchoolDb {
     }
 
     @Override
-    public void insertClass(String id,String nomeDaTurma, String professores_ra) {
+    public void insertClass(String id, String nomeDaTurma, String professores_ra) {
         String sql = "INSERT INTO turmas (id, nomeDaTurma, professores_ra) VALUES (?, ?, ?)";
 
-        try (Connection conn = ConsumerAPIJBDC.conectar()){
+        try (Connection conn = ConsumerAPIJBDC.conectar()) {
             assert conn != null;
-             try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-                 pstmt.setString(1, id);
-                 pstmt.setString(2, nomeDaTurma);
-                 pstmt.setString(3, professores_ra);
-                 pstmt.executeUpdate();
-                 System.out.println("Turma inserida com sucesso.");
+                pstmt.setString(1, id);
+                pstmt.setString(2, nomeDaTurma);
+                pstmt.setString(3, professores_ra);
+                pstmt.executeUpdate();
+                System.out.println("Turma inserida com sucesso.");
 
-             }
+            }
         } catch (SQLException e) {
             System.err.println("Erro ao inserir turma: " + e.getMessage());
         }
@@ -58,29 +57,28 @@ public class ClassSchServiceDbDb implements IClassSchoolDb {
         Map<String, ClassSchool> turmas = new HashMap<>();
         String sql = "SELECT * FROM turmas";
 
-        try (Connection conn = ConsumerAPIJBDC.conectar()){
-                assert conn != null;
-                try(Statement stmt = conn.createStatement()){
+        try (Connection conn = ConsumerAPIJBDC.conectar()) {
+            assert conn != null;
+            try (Statement stmt = conn.createStatement()) {
 
 
+                ResultSet rs = stmt.executeQuery(sql);
+                {
 
-                 ResultSet rs = stmt.executeQuery(sql);{
-
-                        while (rs.next()) {
-                            String id = rs.getString("id");
-                            String nome = rs.getString("nomeDaTurma");
-                            String professoresRa = rs.getString("professores_ra");
-                            ClassSchool turma = new ClassSchool(nome, professoresRa);
-                            turmas.put(id, turma);
-                        }
+                    while (rs.next()) {
+                        String id = rs.getString("id");
+                        String nome = rs.getString("nomeDaTurma");
+                        String professoresRa = rs.getString("professores_ra");
+                        ClassSchool turma = new ClassSchool(nome, professoresRa);
+                        turmas.put(id, turma);
                     }
+                }
             }
-            } catch (SQLException e) {
+        } catch (SQLException e) {
             System.err.println("Erro ao listar turmas: " + e.getMessage());
         }
         return turmas;
-    }
-/*
+    }/*
     public void buscarTurmaPorId(int id) {
         String sql = "SELECT * FROM turmas WHERE id = ?";
 
