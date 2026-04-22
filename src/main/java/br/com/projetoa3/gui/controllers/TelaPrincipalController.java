@@ -119,7 +119,7 @@ public class TelaPrincipalController implements Initializable {
     @FXML
     public void mostrarTurmas() {
         FxmlLoader fxmlLoader = new FxmlLoader();
-        fxmlLoader.mostrarTurmas(trocarTurmaMenu, listaAlunosId, listaDePresenca, alunosFormatados);
+        fxmlLoader.mostrarTurmas(trocarTurmaMenu, listaAlunosId, listaDePresenca, Professor.getRaLogado());
     }
 }
 

@@ -1,7 +1,13 @@
 package br.com.projetoa3.gui.validations;
 
+import br.com.projetoa3.bancodedados.NotesDbServiceDb;
+import br.com.projetoa3.bancodedados.consurmers.ConsumeDbNotes;
+import br.com.projetoa3.bancodedados.interfacedb.INotesDb;
 import br.com.projetoa3.gui.alerts.AlertsClass;
+import br.com.projetoa3.modelo.records.Notes;
 import javafx.scene.control.TextField;
+
+import java.util.Map;
 
 public class ValidationsAddNotes {
     public static void validationsAddNotes(int notaA1, int notaA2, int notaA3){
@@ -24,5 +30,18 @@ public class ValidationsAddNotes {
                     "Cadastro de Notas");
             throw new RuntimeException("Por favor, preencha os campos de notas.");
         }
+    }
+
+    public static boolean verificarSeExisteNota(String ra, String turma){
+        boolean existeNota = false;
+        INotesDb notesDb = new NotesDbServiceDb();
+        ConsumeDbNotes consumeDbNotes = new ConsumeDbNotes(notesDb);
+        for(Map.Entry<String, Notes> entry : consumeDbNotes.listConsume().entrySet()) {
+            if (entry.getKey().equals(ra + "-" + turma)) {
+                existeNota = true;
+                break;
+            }
+        }
+        return existeNota;
     }
 }

@@ -17,31 +17,34 @@ public class ClassVerification {
     }
 
     @FXML
-    public static void filtrarAlunosPorTurma(String turma, ListView<String> listaAlunosId, ListView<String> listaDePresenca, Menu trocarTurmaMenu) {
+    public static void filtrarAlunosPorTurma(String turma, ListView<String> listaAlunosId, ListView<String> listaDePresenca, String professorLogado) {
+        ObservableList<String> alunosFilt = FXCollections.observableArrayList();
+        ObservableList<String> alunoPrese = FXCollections.observableArrayList();
         Alunos.getListaObservable().forEach(aluno -> {
-            if(aluno.turma().equals(turma)){
+            if(aluno.turma().equals(turma) && aluno.professor().equals(professorLogado)){
                 alunosFiltrados.clear();
                 alunoPresense.clear();
-                alunosFiltrados.add(aluno.toString());
-                alunoPresense.add(alunoTurma(aluno));
+                alunosFilt.add(aluno.toString());
+                alunoPrese.add(alunoTurma(aluno));
             }
         });
+        alunosFiltrados.setAll(alunosFilt);
+        alunoPresense.setAll(alunoPrese);
         listaAlunosId.setItems(alunosFiltrados);
         listaDePresenca.setItems(alunoPresense);
     }
 
-    public static void todosAlunos(Menu trocarTurmaMenu, ListView<String> listaAlunosId, ListView<String> listaDePresenca) {
-        ObservableList<MenuItem> turmaMenu = FXCollections.observableArrayList();
-        MenuItem item = new MenuItem("Todas as turmas");
-        turmaMenu.add(item);
+    public static void todosAlunos(ListView<String> listaAlunosId, ListView<String> listaDePresenca) {
+       ObservableList<String> alunosFilt = FXCollections.observableArrayList();
+       ObservableList<String> alunoPrese = FXCollections.observableArrayList();
         Alunos.getListaObservable().forEach(aluno -> {
-            if (trocarTurmaMenu.getItems().equals(turmaMenu)) {
-                alunosFiltrados.clear();
-                alunoPresense.clear();
-                alunosFiltrados.add(aluno.toString());
-                alunoPresense.add(alunoTurma(aluno));
-            }
+            alunosFiltrados.clear();
+            alunoPresense.clear();
+            alunosFilt.add(aluno.toString());
+            alunoPrese.add(alunoTurma(aluno));
         });
+        alunosFiltrados.setAll(alunosFilt);
+        alunoPresense.setAll(alunoPrese);
         listaAlunosId.setItems(alunosFiltrados);
         listaDePresenca.setItems(alunoPresense);
     }

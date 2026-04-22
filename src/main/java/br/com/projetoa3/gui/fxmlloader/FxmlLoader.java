@@ -147,7 +147,7 @@ public class FxmlLoader {
         }
     }
 
-    public void mostrarTurmas(Menu trocarTurmaMenu, ListView<String> listaAlunosId, ListView<String> listaDePresenca, ObservableList<String> alunosFormatados) {
+    public void mostrarTurmas(Menu trocarTurmaMenu, ListView<String> listaAlunosId, ListView<String> listaDePresenca, String professorLogado) {
         trocarTurmaMenu.getItems().clear();
 
         MenuItem todasTurmas = new MenuItem("Todas as turmas");
@@ -161,10 +161,10 @@ public class FxmlLoader {
 
         for (String turma : turmas) {
             MenuItem item = new MenuItem(turma);
-            item.setOnAction(event -> ClassVerification.filtrarAlunosPorTurma(turma, listaAlunosId, listaDePresenca, trocarTurmaMenu));
+            item.setOnAction(event -> ClassVerification.filtrarAlunosPorTurma(turma, listaAlunosId, listaDePresenca, professorLogado));
             trocarTurmaMenu.getItems().add(item);
             todasTurmas.setOnAction(event -> {
-                ClassVerification.todosAlunos(trocarTurmaMenu, listaAlunosId, listaDePresenca);
+                ClassVerification.todosAlunos(listaAlunosId, listaDePresenca);
             });
         }
 
