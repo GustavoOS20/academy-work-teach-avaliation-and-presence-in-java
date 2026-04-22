@@ -14,8 +14,7 @@ public class NotesDbServiceDb implements INotesDb {
     public void createTable() {
         String sql = """
             CREATE TABLE IF NOT EXISTS notas (
-                id int AUTO_INCREMENT PRIMARY KEY,
-                ra int,
+                ra VARCHAR(100) PRIMARY KEY,
                 A1 int,
                 A2 int,
                 A3 int,
@@ -86,40 +85,7 @@ public class NotesDbServiceDb implements INotesDb {
         }
         return notasMap;
     }
-/*
-public void buscarNotasPorId(int idNota) {
-    String sql = """
-            SELECT n.id, a.nome, a.ra, n.A1, n.A2, n.A3, n.soma
-            FROM notas n
-            JOIN alunos a ON n.aluno_id = a.id
-            WHERE n.id = ?
-        """;
 
-    try (Connection conn = DriverManager.getConnection(URL, USUARIO, SENHA);
-         PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-        stmt.setInt(1, idNota);
-        ResultSet rs = stmt.executeQuery();
-
-        if (rs.next()) {
-            System.out.printf("ID Nota: %d | Aluno: %s | RA: %s | A1: %.2f | A2: %.2f | A3: %.2f | Soma: %.2f%n",
-                    rs.getInt("id"),
-                    rs.getString("nome"),
-                    rs.getString("ra"),
-                    rs.getDouble("A1"),
-                    rs.getDouble("A2"),
-                    rs.getDouble("A3"),
-                    rs.getDouble("soma")
-            );
-        } else {
-            System.out.println("Nenhuma nota encontrada com ID: " + idNota);
-        }
-
-    } catch (SQLException e) {
-        System.err.println("Erro ao buscar nota por ID: " + e.getMessage());
-    }
-}
-*/
     @Override
     public void updateNotes(String idNota, int novaA1, int novaA2, int novaA3, int soma, String status)  {
     String sql = "UPDATE notas SET A1 = ?, A2 = ?, A3 = ?, soma = ?, status = ? WHERE id = ?";

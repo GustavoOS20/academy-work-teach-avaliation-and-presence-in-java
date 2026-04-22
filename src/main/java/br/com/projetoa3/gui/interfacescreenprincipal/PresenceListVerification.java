@@ -5,10 +5,7 @@ import br.com.projetoa3.bancodedados.consurmers.ConsumeDbPresence;
 import br.com.projetoa3.bancodedados.interfacedb.IPresenceDb;
 import br.com.projetoa3.modelo.Alunos;
 import br.com.projetoa3.modelo.ListaPresenca;
-import br.com.projetoa3.modelo.Notas;
 import br.com.projetoa3.modelo.Professor;
-import br.com.projetoa3.modelo.consumersmodel.ConsumeStudent;
-import br.com.projetoa3.modelo.records.Notes;
 import br.com.projetoa3.modelo.records.PresenceList;
 import br.com.projetoa3.modelo.records.Student;
 import javafx.beans.property.BooleanProperty;
@@ -36,22 +33,22 @@ public class PresenceListVerification {
             PresenceList presenceList = new PresenceList(new SimpleBooleanProperty(false), aluno.turma(), aluno.professor());
             BooleanProperty prop = presencaData.computeIfAbsent(aluno.ra(), ra -> presenceList).presenca();
             prop.addListener((obs, oldVal, newVal) -> {
-                for(Map.Entry<LocalDate, Map<Long, PresenceList>> entry : consumeDbPresence.listConsume().entrySet()){
+                consumeDbPresence.listConsume().values().forEach(consumeList -> {
                     PresenceList pList = new PresenceList(presenceList.presenca(), aluno.turma(), aluno.professor());
-                    if(entry.getValue().containsValue(pList)){
+                    if(consumeList.containsValue(pList)){
                         consumeDbPresence.updatePresence(aluno.ra(), data, newVal, pList.RaLogado());
                     }else{
                         consumeDbPresence.insertPresence(aluno.ra(), data, newVal, pList.idClass(), pList.RaLogado());
                     }
-                }
+                });
             });
         });
 
-        for (Student aluno : Alunos.getListaObservable()) {
-            if (aluno.professor().equals(Professor.getRaLogado())) {
+        Alunos.getListaObservable().forEach(aluno -> {
+            if(aluno.professor().equals(Professor.getRaLogado())){
                 presencasFiltradas.add(aluno.nome() + " | RA: " + aluno.ra() + " | Turma: " + aluno.turma());
             }
-        }
+        });
         listaDePresenca.setItems(presencasFiltradas);
         listaDePresenca.refresh();
         listaDePresenca.setCellFactory(lv -> new ListCell<>() {
@@ -65,7 +62,6 @@ public class PresenceListVerification {
                 } else {
                     for(Map.Entry<Long, PresenceList> entry : presencaData.entrySet()) {
                         checkBox.setText(item);
-                        PresenceList presenceList = entry.getValue();
                         String[] partes = item.split("\\|");
                         String raStr = partes[1].replace("RA:", "").trim();
                         Long ra = Long.parseLong(raStr);

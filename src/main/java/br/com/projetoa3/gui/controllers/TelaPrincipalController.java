@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class TelaPrincipalController implements Initializable {
     private static final ObservableList<String> alunosFormatados = FXCollections.observableArrayList();
@@ -77,9 +78,7 @@ public class TelaPrincipalController implements Initializable {
             PresenceListVerification.carregarPresencas(newDate,listaDePresenca);
         });
         PresenceListVerification.carregarPresencas(LocalDate.now(), listaDePresenca);
-        for (Notes nota : Notas.getNotasObservable()) {
-            listaNotas.add(nota.toString());
-        }
+        Notas.getNotasObservable().forEach(n -> listaNotas.add(n.toString()));
         PresenceListVerification.carregarPresencas(calendario.getValue(), listaDePresenca);
     }
 

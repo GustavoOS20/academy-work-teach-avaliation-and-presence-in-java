@@ -18,14 +18,14 @@ public class ClassVerification {
 
     @FXML
     public static void filtrarAlunosPorTurma(String turma, ListView<String> listaAlunosId, ListView<String> listaDePresenca, Menu trocarTurmaMenu) {
-        for (Student aluno : Alunos.getListaObservable()) {
-            if (aluno.turma().equals(turma)) {
+        Alunos.getListaObservable().forEach(aluno -> {
+            if(aluno.turma().equals(turma)){
                 alunosFiltrados.clear();
                 alunoPresense.clear();
                 alunosFiltrados.add(aluno.toString());
                 alunoPresense.add(alunoTurma(aluno));
             }
-        }
+        });
         listaAlunosId.setItems(alunosFiltrados);
         listaDePresenca.setItems(alunoPresense);
     }
@@ -34,14 +34,14 @@ public class ClassVerification {
         ObservableList<MenuItem> turmaMenu = FXCollections.observableArrayList();
         MenuItem item = new MenuItem("Todas as turmas");
         turmaMenu.add(item);
-        for (Student aluno : Alunos.getListaObservable()) {
+        Alunos.getListaObservable().forEach(aluno -> {
             if (trocarTurmaMenu.getItems().equals(turmaMenu)) {
                 alunosFiltrados.clear();
                 alunoPresense.clear();
                 alunosFiltrados.add(aluno.toString());
                 alunoPresense.add(alunoTurma(aluno));
             }
-        }
+        });
         listaAlunosId.setItems(alunosFiltrados);
         listaDePresenca.setItems(alunoPresense);
     }

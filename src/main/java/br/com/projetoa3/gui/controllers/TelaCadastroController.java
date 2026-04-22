@@ -20,7 +20,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 
 import java.net.URL;
-import java.util.Map;
 import java.util.ResourceBundle;
 
 public class TelaCadastroController implements Initializable {
@@ -44,7 +43,6 @@ public class TelaCadastroController implements Initializable {
 
     @FXML
     private void confirmarCadastro() {
-        String turma;
         IStudent iStudent = new Alunos();
         ConsumeStudent consumeStudent = new ConsumeStudent(iStudent);
         IDBStudent idbStudent = new StudentServiceDb();
@@ -52,33 +50,31 @@ public class TelaCadastroController implements Initializable {
         AlertsClass alert = new AlertsClass();
         long raLong = Long.parseLong(cadastrarRAId1.getText().trim());
         ValidationsRegister.validationRegisterStudents(cadastrarNomeId, cadastrarRAId1, comboBoxTurma);
-        for (Map.Entry<String, Student> entry3 : consumeStudent.consumeList().entrySet()) {
-            if (entry3.getValue().ra() == raLong && entry3.getValue().professor().equals(Professor.getRaLogado()) && entry3.getValue().turma().equals(comboBoxTurma.getValue())) {
-            alert.alertInformation("Erro no cadastro de alunos", "RA já cadastrado. Por favor, insira um RA diferente.", "Cadastro de alunos");
-            return;
+        consumeStudent.consumeList().values().forEach(student -> {
+            if (student.ra() == raLong && student.professor().equals(Professor.getRaLogado()) && student.turma().equals(comboBoxTurma.getValue())) {
+                alert.alertInformation("Erro no cadastro de alunos", "RA já cadastrado. Por favor, insira um RA diferente.", "Cadastro de alunos");
             }
-        }
+        });
         consumeStudent.consumeAddStu(new Student(cadastrarNomeId.getText().trim(), raLong, comboBoxTurma.getValue(), Professor.getRaLogado()));
-
-        for (Map.Entry<String, Student> entry3 : consumeStudent.consumeList().entrySet()) {
-            consumerDbStudent.insertConsume(entry3.getValue().ra(), entry3.getValue().nome(), entry3.getValue().turma(), entry3.getValue().professor());
-            turma = entry3.getValue().turma();
+        consumeStudent.consumeList().values().forEach(student -> {
+            consumerDbStudent.insertConsume(student.ra(), student.nome(), student.turma(), student.professor());
+            String turmaa = student.turma();
             alert.alertInformation(
                     "Aluno cadastrado",
                     "Clique em OK para continuar.",
-                    "Aluno cadastrado com sucesso!\\nNome: " + cadastrarNomeId.getText() + "\nRA: " + cadastrarRAId1.getText() + "\nTurma: " + turma);
-        }
+                    "Aluno cadastrado com sucesso!\\nNome: " + cadastrarNomeId.getText() + "\nRA: " + cadastrarRAId1.getText() + "\nTurma: " + turmaa);
+        });
         cadastrarNomeId.clear();
         cadastrarRAId1.clear();
     }
 
     private void atualizarTurmasPorProfessor() {
         ObservableList<String> turmasFiltPorProfessor = FXCollections.observableArrayList();
-        for (ClassSchool turma : Turmas.getTurmasObservable()) {
-            if (turma.professor().equals(Professor.getRaLogado())) {
-                turmasFiltPorProfessor.add(turma.nome());
-            }
-        }
+        Turmas.getTurmasObservable().forEach(turms -> {
+                if (turms.professor().equals(Professor.getRaLogado())) {
+                    turmasFiltPorProfessor.add(turms.nome());
+                }
+        });
         comboBoxTurma.getItems().clear();
         comboBoxTurma.getItems().addAll(turmasFiltPorProfessor);
     }

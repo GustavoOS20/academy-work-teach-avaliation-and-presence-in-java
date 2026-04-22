@@ -35,9 +35,6 @@ public class TelaCadastrarNotasController implements Initializable {
     @FXML
     private TextField cadastrarNotaA3;
 
-    @FXML
-    private Label labelNomeSelecionado;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         ListaNomesNotas.setItems(Alunos.getListaObservable());
@@ -45,7 +42,6 @@ public class TelaCadastrarNotasController implements Initializable {
         ListaNomesNotas.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 alunoSelecionado = newVal;
-
                 exibirNotasDoAluno(newVal);
             }
         });
@@ -62,6 +58,13 @@ public class TelaCadastrarNotasController implements Initializable {
     @FXML
     public void cadastrarNotas() {
         try {
+            ListaNomesNotas.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal != null) {
+                    alunoSelecionado = newVal;
+
+                    exibirNotasDoAluno(newVal);
+                }
+            });
             AlertsClass alertsClass = new AlertsClass();
             INotes iNotes = new Notas();
             ConsumeNotes consumeNotes = new ConsumeNotes(iNotes);
@@ -93,7 +96,6 @@ public class TelaCadastrarNotasController implements Initializable {
 
     @FXML
     private void exibirNotasDoAluno(Student aluno) {
-        labelNomeSelecionado.setText(aluno.nome());
         Notes notas = Notas.getNotaPorAluno(aluno.ra()+"-"+aluno.turma());
         if (notas != null) {
             cadastrarNotaA1.setText(String.valueOf(notas.notaA1()));

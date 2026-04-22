@@ -78,72 +78,7 @@ public class ClassSchServiceDbDb implements IClassSchoolDb {
             System.err.println("Erro ao listar turmas: " + e.getMessage());
         }
         return turmas;
-    }/*
-    public void buscarTurmaPorId(int id) {
-        String sql = "SELECT * FROM turmas WHERE id = ?";
-
-        try (Connection conn = C);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next()) {
-                System.out.println("Turma encontrada: " + rs.getString("nomeDaTurma"));
-            } else {
-                System.out.println("Nenhuma turma encontrada com ID " + id);
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Erro ao buscar turma por ID: " + e.getMessage());
-        }
     }
-
-    public void buscarTurmaPorNome(String nome) {
-        String sql = "SELECT * FROM turmas WHERE nomeDaTurma LIKE ?";
-
-        try (Connection conn = DriverManager.getConnection(URL, USUARIO, SENHA);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, "%" + nome + "%");
-            ResultSet rs = pstmt.executeQuery();
-
-            boolean encontrou = false;
-            while (rs.next()) {
-                encontrou = true;
-                System.out.println("ID: " + rs.getInt("id") + " | Nome: " + rs.getString("nomeDaTurma"));
-            }
-
-            if (!encontrou) {
-                System.out.println("Nenhuma turma encontrada com nome contendo: " + nome);
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Erro ao buscar turma por nome: " + e.getMessage());
-        }
-    }
-
-    public void atualizarTurma(int id, String novoNome) {
-        String sql = "UPDATE turmas SET nomeDaTurma = ? WHERE id = ?";
-
-        try (Connection conn = DriverManager.getConnection(URL, USUARIO, SENHA);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-            pstmt.setString(1, novoNome);
-            pstmt.setInt(2, id);
-
-            int linhasAfetadas = pstmt.executeUpdate();
-            if (linhasAfetadas > 0) {
-                System.out.println("Turma atualizada com sucesso.");
-            } else {
-                System.out.println("Nenhuma turma encontrada com ID " + id);
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Erro ao atualizar turma: " + e.getMessage());
-        }
-    }
-*/
     @Override
     public void delete(String id) {
         String sql = "DELETE FROM turmas WHERE id = ?";

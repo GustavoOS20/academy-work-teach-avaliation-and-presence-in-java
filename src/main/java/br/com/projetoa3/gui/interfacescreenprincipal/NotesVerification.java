@@ -15,28 +15,32 @@ public class NotesVerification {
             if (newValue != null) {
                 try {
                     listaNotasId.refresh();
-                    long ra = Long.parseLong(newValue);
-                    for (Map.Entry<String, Student> entry : consumeStudent.consumeList().entrySet()) {
-                        if (entry.getValue().ra() == ra) {
-                            String turma = entry.getValue().turma();
-
+                    String raa = newValue.replaceAll("[^0-9]", "");
+                    String raaFormat = raa.length() > 10 ? raa.substring(0, 10) : raa;
+                    System.out.println(raaFormat);
+                    long ra = Long.parseLong(raaFormat);
+                    consumeStudent.consumeList().values().forEach(c -> {
+                        if(c.ra() == ra) {
+                            String turma = c.turma();
                             Notes nota = Notas.getNotaPorAluno(ra + "-" + turma);
                             if (nota != null) {
                                 listaNotasId.getItems().setAll(
                                         "A1: " + nota.notaA1(),
                                         "A2: " + nota.notaA2(),
                                         "A3: " + nota.notaA3(),
-                                        "Soma: " + nota.notaA1() + nota.notaA2() + nota.notaA3(),
+                                        "Soma: " + (nota.notaA1() + nota.notaA2() + nota.notaA3()),
                                         "Status: " + nota.getStatus()
                                 );
+                            } else {
+                                listaNotasId.getItems().setAll("Sem notas cadastradas");
+                                System.out.println(" - " + nota.notaA1() + " - " + nota.notaA2() + " - " + nota.notaA3());
                             }
-                        } else {
-                            listaNotasId.getItems().setAll("Sem notas cadastradas");
                         }
-                    }
+                    });
 
                 } catch (NumberFormatException e) {
                     listaNotasId.getItems().setAll("Erro ao ler RA");
+                    throw new RuntimeException();
                 }
             }
         });

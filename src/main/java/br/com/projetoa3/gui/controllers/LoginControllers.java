@@ -28,6 +28,7 @@ public class LoginControllers implements Initializable {
 
     @FXML
     private Button botaoCadastrar;
+    private boolean loginValido = false;
 
     @FXML
     @Override
@@ -49,16 +50,15 @@ public class LoginControllers implements Initializable {
 
     public boolean VerificarLogin() {
         AlertsClass alerts = new AlertsClass();
-        boolean loginValido = false;
 
-        for (Teach teach : Professor.getProfessorLista().values()) {
+        Professor.getProfessorLista().values().forEach(teach -> {
             if (teach.email().equals(LoginUsuario.getText()) && teach.senha().equals(LoginSenha.getText())) {
                 loginValido = true;
                 Professor.setNomeLogado(teach.nome());
                 Professor.setRaLogado(teach.ra());
-                break;
             }
-        }
+        });
+
         if (LoginUsuario.getText().isEmpty() || LoginSenha.getText().isEmpty()) {
             alerts.alertInformation("Login", "Por favor, preencha todos os campos.", "Login de usuários");
             throw new RuntimeException("preencha todos os campos");
