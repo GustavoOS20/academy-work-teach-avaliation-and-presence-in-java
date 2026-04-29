@@ -1,11 +1,11 @@
-# 🎓 Sistema de Gestão Acadêmica (Presença & Notas)
+# Sistema de Gestão Acadêmica (Presença & Notas)
 > Projeto Desktop desenvolvido nativamente no IntelliJ IDEA com JavaFX e MySQL.
 
 Este sistema foi criado para facilitar o controle de frequência e o desempenho escolar dos alunos, integrando uma interface gráfica intuitiva com persistência de dados em tempo real.
 
 ---
 
-## 🛠️ Tecnologias & Ambiente
+## Tecnologias & Ambiente
 
 *   **Linguagem:** Java 21 (LTS)
 *   **Interface:** JavaFX
@@ -14,7 +14,7 @@ Este sistema foi criado para facilitar o controle de frequência e o desempenho 
 
 ---
 
-## ⚙️ Configuração do Banco de Dados
+## Configuração do Banco de Dados
 
 Siga os passos abaixo para preparar o ambiente MySQL:
 
@@ -32,7 +32,7 @@ Siga os passos abaixo para preparar o ambiente MySQL:
 
 ---
 
-## 🚀 Como Executar no IntelliJ
+## Como Executar no IntelliJ
 
 Como este é um projeto estruturado via arquivo `.iml`, siga estes passos:
 
@@ -49,19 +49,20 @@ Como este é um projeto estruturado via arquivo `.iml`, siga estes passos:
 
 ---
 
-## 📌 Funcionalidades Principais
+## Funcionalidades Principais
 
-*   ✅ **Gestão de Alunos:** Cadastro, edição e listagem.
-*   ✅ **Diário de Classe:** Controle de presença por data.
-*   ✅ **Avaliações:** Lançamento de notas com cálculo de média automático.
-*   ✅ **Persistência:** Armazenamento seguro de todas as informações no MySQL.
+*  **Gestão de Alunos:** Cadastro, edição e listagem.
+*  **Diário de Classe:** Controle de presença por data.
+*  **Avaliações:** Lançamento de notas com cálculo de média automático.
+*  **Persistência:** Armazenamento seguro de todas as informações no MySQL.
 
 ---
 
-## 📂 Organização das Pastas
+## Organização das Pastas
 
 *   `.idea/` & `*.iml`: Arquivos de configuração nativos do IntelliJ.
-*   `src/`: Contém todo o código fonte (Classes Java e arquivos .fxml).
+*   `src/`: Contém todo o código fonte (Classes Java).
+*   `resources/`: Contém todos os arquivos fxml e imagens.
 *   `bancodedados/`: Tudo relacionado a banco de dados (interfaces, entity e consumers).
 *   `gui/`: Tudo relacionado a interface gráfica (alerts, controllers, fxml loaders, interfacescreenprincipal (filtros e verificações da interface), main (inciador está localizado aqui), validations(validations de campo da interface).
 *   `modelos/`: modelo de dados para transitar dados internamente durante a execução (interfaces, entity e consumers).
@@ -72,4 +73,4 @@ Desenvolvido por
 Gutemberg Pereira Nogueira Neto |
 Arthur Oliveira de Matos |
 Tarsis Davi Silva Rodrigues |
-Breno Alcindo Santana |** 🚀
+Breno Alcindo Santana |** 
