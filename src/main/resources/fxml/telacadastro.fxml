@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<HBox prefHeight="558.0" prefWidth="779.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.com.projetoa3.gui.controllers.TelaCadastroController">
+<HBox prefHeight="558.0" prefWidth="779.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.com.projetoa3.src.gui.controllers.TelaCadastroController">
    <children>
       <VBox prefHeight="527.0" prefWidth="783.0" style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #ADD8E6, #66ccff); -fx-background-radius: 15; -fx-border-radius: 15; -fx-border-color: #002244; -fx-padding: 10; -fx-border-width: 2;">
          <HBox.margin>

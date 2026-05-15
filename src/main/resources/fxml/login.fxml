@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<VBox style="-fx-padding: 15;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.com.projetoa3.gui.controllers.LoginControllers">
+<VBox style="-fx-padding: 15;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="br.com.projetoa3.src.gui.controllers.LoginControllers">
    <children>
       <HBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="430.0" style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #ADD8E6, #66ccff); -fx-background-radius: 15; -fx-border-radius: 15; -fx-border-color: #002244; -fx-border-width: 2;">
           <children>

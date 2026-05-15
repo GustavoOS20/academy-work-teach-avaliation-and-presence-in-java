@@ -1,0 +1,13 @@
+package br.com.projetoa3.src.modelo.interfaces;
+
+import br.com.projetoa3.src.modelo.records.Student;
+
+import java.util.Map;
+
+public interface IStudent {
+   void addStudents(Student student);
+   void removeStudents(String ra);
+   Map<String, Student> getList();
+   void setList(Map<String, Student> listaAlunos);
+
+}

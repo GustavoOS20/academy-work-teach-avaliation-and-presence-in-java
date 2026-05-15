@@ -10,7 +10,7 @@
 <?import javafx.scene.text.Font?>
 
 
-<HBox fx:controller="br.com.projetoa3.gui.controllers.TelaCadastrarNotasController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<HBox fx:controller="br.com.projetoa3.src.gui.controllers.TelaCadastrarNotasController" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <VBox prefHeight="570.0" prefWidth="354.0" style="-fx-background-color: linear-gradient(from 0% 0% to 100% 100%, #ADD8E6, #66ccff); -fx-padding: 10; -fx-border-radius: 15; -fx-background-radius: 15; -fx-border-color: #002244; -fx-border-width: 2;">
          <children>

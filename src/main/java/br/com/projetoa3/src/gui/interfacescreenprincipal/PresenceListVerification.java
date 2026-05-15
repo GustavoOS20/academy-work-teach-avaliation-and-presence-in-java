@@ -1,0 +1,76 @@
+package br.com.projetoa3.src.gui.interfacescreenprincipal;
+
+import br.com.projetoa3.src.bancodedados.PresenceDbServiceDb;
+import br.com.projetoa3.src.bancodedados.consurmers.ConsumeDbPresence;
+import br.com.projetoa3.src.bancodedados.interfacedb.IPresenceDb;
+import br.com.projetoa3.src.modelo.Alunos;
+import br.com.projetoa3.src.modelo.ListaPresenca;
+import br.com.projetoa3.src.modelo.Professor;
+import br.com.projetoa3.src.modelo.records.PresenceList;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+
+public class PresenceListVerification {
+
+    public static void carregarPresencas(LocalDate data, ListView<String> listaDePresenca ) {
+        ObservableList<String> presencasFiltradas = FXCollections.observableArrayList();
+        IPresenceDb iPresenceDb = new PresenceDbServiceDb();
+        ConsumeDbPresence consumeDbPresence = new ConsumeDbPresence(iPresenceDb);
+        listaDePresenca.refresh();
+        Map<Long, PresenceList> presencaData = ListaPresenca.getPresencas()
+                .computeIfAbsent(data, d -> new HashMap<>());
+        Alunos.getListaObservable().forEach(aluno -> {
+            PresenceList presenceList = new PresenceList(new SimpleBooleanProperty(false), aluno.turma(), aluno.professor());
+            BooleanProperty prop = presencaData.computeIfAbsent(aluno.ra(), ra -> presenceList).presenca();
+            prop.addListener((obs, oldVal, newVal) -> {
+                consumeDbPresence.listConsume().values().forEach(consumeList -> {
+                    PresenceList pList = new PresenceList(presenceList.presenca(), aluno.turma(), aluno.professor());
+                    if(consumeList.containsValue(pList)){
+                        consumeDbPresence.updatePresence(aluno.ra(), data, newVal, pList.RaLogado());
+                    }else{
+                        consumeDbPresence.insertPresence(aluno.ra(), data, newVal, pList.idClass(), pList.RaLogado());
+                    }
+                });
+            });
+        });
+
+        Alunos.getListaObservable().forEach(aluno -> {
+            if(aluno.professor().equals(Professor.getRaLogado())){
+                presencasFiltradas.add(aluno.nome() + " | RA: " + aluno.ra() + " | Turma: " + aluno.turma());
+            }
+        });
+        listaDePresenca.setItems(presencasFiltradas);
+        listaDePresenca.refresh();
+        listaDePresenca.setCellFactory(lv -> new ListCell<>() {
+            private final CheckBox checkBox = new CheckBox();
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    for(Map.Entry<Long, PresenceList> entry : presencaData.entrySet()) {
+                        checkBox.setText(item);
+                        String[] partes = item.split("\\|");
+                        String raStr = partes[1].replace("RA:", "").trim();
+                        Long ra = Long.parseLong(raStr);
+                        checkBox.selectedProperty().unbind();
+                        checkBox.selectedProperty().bindBidirectional(presencaData.get(ra).presenca());
+                        setGraphic(checkBox);
+                    }
+
+                }
+            }
+        });
+    }
+}
